@@ -5,6 +5,13 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class USRAnimInstance;
+
+enum class EControlMode
+{
+	FirstPersonView,
+	ThirdPersonView,
+};
 
 UCLASS()
 class SHOOTING_RANGE_API ASRCharacter : public ACharacter
@@ -19,12 +26,18 @@ protected:
 
 public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void PostInitializeComponents() override;
 
 private:
+	void Jump();
+	void Crouch();
 	void MoveForward(float NewAxisValue);
 	void MoveRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void TurnRight(float NewAxisValue);
+
+	void ViewChange();
+	void SetControlMode(EControlMode NewControlMode);
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -32,4 +45,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
+
+	EControlMode CurrentControlMode = EControlMode::ThirdPersonView;
+
+	UPROPERTY()
+	USRAnimInstance* SRAnim;
 };
