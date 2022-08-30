@@ -10,4 +10,6 @@ class SHOOTING_RANGE_API AShooting_RangeGameModeBase : public AGameModeBase
 
 public:
 	AShooting_RangeGameModeBase();
+
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 };
