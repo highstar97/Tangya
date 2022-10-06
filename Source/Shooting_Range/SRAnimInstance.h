@@ -12,22 +12,18 @@ public:
 	USRAnimInstance();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	void SetEnableJump(bool boolean);
+	bool GetbCanJump() { return bCanJump; }
+	void SetbCanJump(bool boolean);
 
-	bool GetCrouching() { return Crouching; }
-	void SetCrouching(bool boolean);
-
-	bool GetJumping() { return Jumping; }
+	bool GetbCrouching() { return bCrouching; }
+	void SetbCrouching(bool boolean);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, Meta = (AllowPrivateAccess = true))
-	bool EnableJump;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, Meta = (AllowPrivateAccess = true))
-	bool Jumping;
+	bool bCanJump;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
-	bool Crouching;
+	bool bCrouching;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	float Speed;

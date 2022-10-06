@@ -79,9 +79,9 @@ void ASRCharacter::PostInitializeComponents()
 
 void ASRCharacter::Jump()
 {
-	if (false == SRAnim->GetJumping())
+	if (true == SRAnim->GetbCanJump() && false == SRAnim->GetbCrouching())
 	{
-		SRAnim->SetEnableJump(true);
+		SRAnim->SetbCanJump(false);
 		bPressedJump = true;
 		JumpKeyHoldTime = 0.0f;
 	}
@@ -89,7 +89,7 @@ void ASRCharacter::Jump()
 
 void ASRCharacter::Crouch()
 {
-	SRAnim->GetCrouching() == true ? SRAnim->SetCrouching(false) : SRAnim->SetCrouching(true);
+	SRAnim->GetbCrouching() == true ? SRAnim->SetbCrouching(false) : SRAnim->SetbCrouching(true);
 }
 
 void ASRCharacter::MoveForward(float NewAxisValue)

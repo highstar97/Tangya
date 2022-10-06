@@ -2,9 +2,8 @@
 
 USRAnimInstance::USRAnimInstance()
 {
-	EnableJump = true;
-	Jumping = false;
-	Crouching = false;
+	bCanJump = true;
+	bCrouching = false;
 	Speed = 0.0f;
 	Direction = 0.0f;
 }
@@ -20,13 +19,12 @@ void USRAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void USRAnimInstance::SetEnableJump(bool boolean)
+void USRAnimInstance::SetbCanJump(bool boolean)
 {
-	EnableJump = boolean;
-	Jumping = boolean;
+	bCanJump = boolean;
 }
 
-void USRAnimInstance::SetCrouching(bool boolean)
+void USRAnimInstance::SetbCrouching(bool boolean)
 {
-	Crouching = boolean;
+	bCrouching = boolean;
 }
