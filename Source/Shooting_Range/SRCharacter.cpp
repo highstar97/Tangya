@@ -44,6 +44,18 @@ ASRCharacter::ASRCharacter()
 	}
 
 	SetControlMode(EControlMode::ThirdPersonView);
+
+	FName WeaponSocket(TEXT("hand_rSocket"));
+	if (GetMesh()->DoesSocketExist(WeaponSocket))
+	{
+		Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
+		static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_WEAPON(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/Ka47/SK_KA47_X.SK_KA47_X"));
+		if (SK_WEAPON.Succeeded())
+		{
+			Weapon->SetSkeletalMesh(SK_WEAPON.Object);
+		}
+		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
+	}
 }
 
 void ASRCharacter::BeginPlay()
@@ -59,6 +71,7 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed ,this, &ASRCharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ASRCharacter::Crouch);
 	PlayerInputComponent->BindAction(TEXT("ViewChange"), EInputEvent::IE_Pressed, this, &ASRCharacter::ViewChange);
+	PlayerInputComponent->BindAction(TEXT("ZoomIn"), EInputEvent::IE_Pressed, this, &ASRCharacter::ZoomIn);
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ASRCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ASRCharacter::MoveRight);
@@ -176,5 +189,13 @@ void ASRCharacter::SetControlMode(EControlMode NewControlMode)
 		}
 		break;
 	}
+	}
+}
+
+void ASRCharacter::ZoomIn()
+{
+	if (nullptr != SRAnim)
+	{
+		SRAnim->ChangebJoomIn();
 	}
 }

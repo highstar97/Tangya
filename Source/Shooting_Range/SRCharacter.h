@@ -39,6 +39,8 @@ private:
 	void ViewChange();
 	void SetControlMode(EControlMode NewControlMode);
 
+	void ZoomIn();
+
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* SpringArm;
@@ -50,4 +52,7 @@ public:
 
 	UPROPERTY()
 	USRAnimInstance* SRAnim;
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	USkeletalMeshComponent* Weapon;
 };

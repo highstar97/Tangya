@@ -18,7 +18,12 @@ public:
 	bool GetbCrouching() { return bCrouching; }
 	void SetbCrouching(bool boolean);
 
+	void ChangebJoomIn();
+
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, Meta = (AllowPrivateAccess = true))
+	bool bZoomIn;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, Meta = (AllowPrivateAccess = true))
 	bool bCanJump;
 

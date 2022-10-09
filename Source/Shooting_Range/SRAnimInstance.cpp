@@ -2,6 +2,7 @@
 
 USRAnimInstance::USRAnimInstance()
 {
+	bZoomIn = false;
 	bCanJump = true;
 	bCrouching = false;
 	Speed = 0.0f;
@@ -27,4 +28,9 @@ void USRAnimInstance::SetbCanJump(bool boolean)
 void USRAnimInstance::SetbCrouching(bool boolean)
 {
 	bCrouching = boolean;
+}
+
+void USRAnimInstance::ChangebJoomIn()
+{
+	bZoomIn = !bZoomIn;
 }
