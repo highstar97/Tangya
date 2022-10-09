@@ -6,6 +6,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class USRAnimInstance;
+class ASRBullet;
 
 enum class EControlMode
 {
@@ -41,6 +42,8 @@ private:
 
 	void ZoomIn();
 
+	void Fire();
+
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* SpringArm;
@@ -55,4 +58,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* Weapon;
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	ASRBullet* Bullet;
 };

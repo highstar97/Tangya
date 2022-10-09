@@ -1,5 +1,6 @@
 #include "SRCharacter.h"
 #include "SRAnimInstance.h"
+#include "SRBullet.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Gameframework/SpringArmComponent.h"
@@ -45,6 +46,7 @@ ASRCharacter::ASRCharacter()
 
 	SetControlMode(EControlMode::ThirdPersonView);
 
+	// Equipt Weapon
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	if (GetMesh()->DoesSocketExist(WeaponSocket))
 	{
@@ -72,6 +74,7 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ASRCharacter::Crouch);
 	PlayerInputComponent->BindAction(TEXT("ViewChange"), EInputEvent::IE_Pressed, this, &ASRCharacter::ViewChange);
 	PlayerInputComponent->BindAction(TEXT("ZoomIn"), EInputEvent::IE_Pressed, this, &ASRCharacter::ZoomIn);
+	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ASRCharacter::Fire);
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ASRCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ASRCharacter::MoveRight);
@@ -198,4 +201,9 @@ void ASRCharacter::ZoomIn()
 	{
 		SRAnim->ChangebJoomIn();
 	}
+}
+
+void ASRCharacter::Fire()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Fire Bullet"));
 }
