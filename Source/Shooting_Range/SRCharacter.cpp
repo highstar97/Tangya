@@ -1,7 +1,10 @@
 #include "SRCharacter.h"
 #include "SRAnimInstance.h"
 #include "SRBullet.h"
+#include "Bullet762x39.h"
+#include "Engine/World.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SceneComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Gameframework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -205,5 +208,26 @@ void ASRCharacter::ZoomIn()
 
 void ASRCharacter::Fire()
 {
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	GetActorEyesViewPoint(CameraLocation, CameraRotation);
+
+	FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(100.0f, 0.0f, 0.0f));
+	FRotator MuzzleRotation = CameraRotation;
+
+	MuzzleRotation.Pitch += 2.0f;
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		ABullet762x39* Bullet = World->SpawnActor<ABullet762x39>(ABullet762x39::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
+		//Bullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
+		if (Bullet)
+		{
+			FVector LaunchDirection = MuzzleRotation.Vector();
+			Bullet->FireInDirection(LaunchDirection);
+		}
+	}
 	UE_LOG(LogTemp, Warning, TEXT("Fire Bullet"));
 }

@@ -1,4 +1,5 @@
 #include "Bullet762x39.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 ABullet762x39::ABullet762x39()
 {
@@ -11,9 +12,8 @@ ABullet762x39::ABullet762x39()
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> EMPTYBULLET762X39(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/Ammunition/SM_Shell_762x39_Empty.SM_Shell_762x39_Empty"));
 	if (EMPTYBULLET762X39.Succeeded())
 	{
-		Shell->SetStaticMesh(EMPTYBULLET762X39.Object);
+		EmptyShell->SetStaticMesh(EMPTYBULLET762X39.Object);
 	}
 
-	Damage = 7.62f;
-	Speed = 76.2f;
+	ProjectileMovementComponent->InitialSpeed = 7620.0f;
 }

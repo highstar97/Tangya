@@ -3,6 +3,8 @@
 #include "GameFramework/Actor.h"
 #include "SRBullet.generated.h"
 
+class UProjectileMovementComponent;
+
 UCLASS()
 class SHOOTING_RANGE_API ASRBullet : public AActor
 {
@@ -14,6 +16,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	void FireInDirection(const FVector& ShootDirection);
+
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	UStaticMeshComponent* Shell;
@@ -21,9 +26,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	UStaticMeshComponent* EmptyShell;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	float Damage;
-
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	float Speed;
+	UPROPERTY(VisibleAnywhere, Category = Projectile)
+	UProjectileMovementComponent* ProjectileMovementComponent;
 };
