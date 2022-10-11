@@ -49,7 +49,7 @@ ASRCharacter::ASRCharacter()
 		GetMesh()->SetAnimInstanceClass(THIRDPERSON_ANIM.Class);
 	}
 
-	SetControlMode(EControlMode::ThirdPersonView);
+	SetControlMode(EControlView::ThirdPersonView);
 
 	// Equipt Weapon
 	FName WeaponSocket(TEXT("hand_rSocket"));
@@ -79,7 +79,7 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed ,this, &ASRCharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ASRCharacter::Crouch);
-	PlayerInputComponent->BindAction(TEXT("ViewChange"), EInputEvent::IE_Pressed, this, &ASRCharacter::ViewChange);
+	PlayerInputComponent->BindAction(TEXT("ChangeControlView"), EInputEvent::IE_Pressed, this, &ASRCharacter::ChangeControlView);
 	PlayerInputComponent->BindAction(TEXT("ZoomIn"), EInputEvent::IE_Pressed, this, &ASRCharacter::ZoomIn);
 	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ASRCharacter::Fire);
 	PlayerInputComponent->BindAction(TEXT("Click Up"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickUp);
@@ -114,7 +114,16 @@ void ASRCharacter::Jump()
 
 void ASRCharacter::Crouch()
 {
-	SRAnim->GetbCrouching() == true ? SRAnim->SetbCrouching(false) : SRAnim->SetbCrouching(true);
+	if (SRAnim->GetbCrouching())
+	{
+		SRAnim->SetbCrouching(false);
+		ChangeMovementState(EMovementState::Idle);
+	}
+	else
+	{
+		SRAnim->SetbCrouching(true);
+		ChangeMovementState(EMovementState::Crouching);
+	}
 }
 
 void ASRCharacter::MoveForward(float NewAxisValue)
@@ -159,46 +168,81 @@ void ASRCharacter::TurnRight(float NewAxisValue)
 	}
 }
 
-void ASRCharacter::ViewChange()
+void ASRCharacter::ChangeControlView()
 {
-	switch (CurrentControlMode)
+	switch (CurrentControlView)
 	{
-	case EControlMode::FirstPersonView:
+	case EControlView::FirstPersonView:
 	{
-		SetControlMode(EControlMode::ThirdPersonView);
+		SetControlMode(EControlView::ThirdPersonView);
 		break;
 	}
-	case EControlMode::ThirdPersonView:
+	case EControlView::ThirdPersonView:
 	{
-		SetControlMode(EControlMode::FirstPersonView);
+		SetControlMode(EControlView::FirstPersonView);
 		break;
 	}
 	}
 }
 
-void ASRCharacter::SetControlMode(EControlMode NewControlMode)
+void ASRCharacter::SetControlMode(EControlView NewControlMode)
 {
-	CurrentControlMode = NewControlMode;
+	CurrentControlView = NewControlMode;
 
-	switch (CurrentControlMode)
+	switch (CurrentControlView)
 	{
-	case EControlMode::FirstPersonView:
+	case EControlView::FirstPersonView:
 	{
 		SpringArm->TargetArmLength = -30.0f;
 		SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
 		break;
 	}
-	case EControlMode::ThirdPersonView:
+	case EControlView::ThirdPersonView:
 	{
 		SpringArm->TargetArmLength = 250.0f;
 		SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+		break;
+	}
+	}
+}
 
-		if (nullptr != Controller)		// 처음 시작 시 적용 안됨 -> 나중에 함수로 빼서 해결 필요해 보임
-		{
-			APlayerController* const PlayerController = CastChecked<APlayerController>(Controller);
-			PlayerController->PlayerCameraManager->ViewPitchMin = -45.0f;
-			PlayerController->PlayerCameraManager->ViewPitchMax = 45.0f;
-		}
+void ASRCharacter::ChangeMovementState(EMovementState NewState)
+{
+	switch (NewState)
+	{
+	case(EMovementState::Idle):
+	{
+		FVector NewCapsuleLocation = GetActorLocation();
+		NewCapsuleLocation.Z = 303.650208f;
+		GetCapsuleComponent()->SetCapsuleHalfHeight(100.0f);
+		GetCapsuleComponent()->SetRelativeLocation(NewCapsuleLocation);
+
+		FVector NewMeshLocation = GetMesh()->GetRelativeLocation();
+		NewMeshLocation.Z = -100.0f;
+		GetMesh()->SetRelativeLocation(NewMeshLocation);
+
+		SpringArm->TargetArmLength = 250.0f;
+		SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+		Camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
+		GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+		break;
+	}
+	case(EMovementState::Crouching):
+	{
+		FVector NewCapsuleLocation = GetActorLocation();
+		NewCapsuleLocation.Z = 263.650208f;
+		GetCapsuleComponent()->SetCapsuleHalfHeight(60.0f);
+		GetCapsuleComponent()->SetRelativeLocation(NewCapsuleLocation);
+
+		FVector NewMeshLocation = GetMesh()->GetRelativeLocation();
+		NewMeshLocation.Z = -60.0f;
+		GetMesh()->SetRelativeLocation(NewMeshLocation);
+
+		SpringArm->TargetArmLength = 180.0f;
+		Camera->SetRelativeLocation(FVector(0.0f, 0.0f, -25.0f));
+
+		GetCharacterMovement()->MaxWalkSpeed = 250.0f;
 		break;
 	}
 	}
@@ -214,7 +258,7 @@ void ASRCharacter::ZoomIn()
 
 void ASRCharacter::ClickUp()
 {
-	if (0 <= AimingAngle && AimingAngle < 90)
+	if (0 <= AimingAngle && AimingAngle < 45)
 	{
 		AimingAngle += 1;
 		UE_LOG(LogTemp, Warning, TEXT("1 Click Up, Now : %d"), AimingAngle);
@@ -223,13 +267,14 @@ void ASRCharacter::ClickUp()
 
 void ASRCharacter::ClickDown()
 {
-	if (0 < AimingAngle && AimingAngle <= 90)
+	if (0 < AimingAngle && AimingAngle <= 45)
 	{
 		AimingAngle -= 1;
 		UE_LOG(LogTemp, Warning, TEXT("1 Click Down, Now : %d"), AimingAngle);
 	}
 }
 
+// Movement State에 따라, ZoomIn에 따라 총알 발사 위치가 달라져야 함...
 void ASRCharacter::Fire()
 {
 	FVector CameraLocation;	

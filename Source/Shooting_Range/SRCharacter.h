@@ -7,10 +7,16 @@ class USpringArmComponent;
 class UCameraComponent;
 class USRAnimInstance;
 
-enum class EControlMode
+enum class EControlView
 {
 	FirstPersonView,
 	ThirdPersonView,
+};
+
+enum class EMovementState
+{
+	Idle,
+	Crouching,
 };
 
 UCLASS()
@@ -36,8 +42,10 @@ private:
 	void LookUp(float NewAxisValue);
 	void TurnRight(float NewAxisValue);
 
-	void ViewChange();
-	void SetControlMode(EControlMode NewControlMode);
+	void ChangeControlView();
+	void SetControlMode(EControlView NewControlView);
+
+	void ChangeMovementState(EMovementState NewState);
 
 	void ZoomIn();
 
@@ -53,7 +61,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
 
-	EControlMode CurrentControlMode = EControlMode::ThirdPersonView;
+	EControlView CurrentControlView = EControlView::ThirdPersonView;
 
 	UPROPERTY()
 	USRAnimInstance* SRAnim;

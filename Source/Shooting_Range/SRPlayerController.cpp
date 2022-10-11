@@ -17,6 +17,9 @@ void ASRPlayerController::BeginPlay()
 	FInputModeGameOnly InputMode;
 	SetInputMode(InputMode);
 
+	PlayerCameraManager->ViewPitchMin = -45.0f;
+	PlayerCameraManager->ViewPitchMax = 45.0f;
+
 	HuddyWidget = CreateWidget<UUserWidget>(this, HuddyWidgetClass);
 	HuddyWidget->AddToViewport();
 }
