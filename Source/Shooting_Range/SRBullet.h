@@ -17,14 +17,11 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	void FireInDirection(const FVector& ShootDirection);
+	virtual void FireInDirection(const FVector& ShootDirection);
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	UStaticMeshComponent* Shell;
-
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	UStaticMeshComponent* EmptyShell;
 
 	UPROPERTY(VisibleAnywhere, Category = Projectile)
 	UProjectileMovementComponent* ProjectileMovementComponent;

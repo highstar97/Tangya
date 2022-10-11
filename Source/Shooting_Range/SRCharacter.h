@@ -41,7 +41,9 @@ private:
 
 	void ZoomIn();
 
-	void UpdateMuzzleLocation();
+	void ClickUp();
+	void ClickDown();
+
 	void Fire();
 
 public:
@@ -58,4 +60,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* Weapon;
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	int AimingAngle;
 };

@@ -2,6 +2,8 @@
 #include "SRAnimInstance.h"
 #include "SRBullet.h"
 #include "Bullet762x39.h"
+#include "SREmptyBullet.h"
+#include "EmptyBullet762x39.h"
 #include "Engine/World.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SceneComponent.h"
@@ -61,6 +63,8 @@ ASRCharacter::ASRCharacter()
 		}
 		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
 	}
+
+	AimingAngle = 2.0f;
 }
 
 void ASRCharacter::BeginPlay()
@@ -78,6 +82,8 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("ViewChange"), EInputEvent::IE_Pressed, this, &ASRCharacter::ViewChange);
 	PlayerInputComponent->BindAction(TEXT("ZoomIn"), EInputEvent::IE_Pressed, this, &ASRCharacter::ZoomIn);
 	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ASRCharacter::Fire);
+	PlayerInputComponent->BindAction(TEXT("Click Up"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickUp);
+	PlayerInputComponent->BindAction(TEXT("Click Down"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickDown);
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ASRCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ASRCharacter::MoveRight);
@@ -206,28 +212,55 @@ void ASRCharacter::ZoomIn()
 	}
 }
 
+void ASRCharacter::ClickUp()
+{
+	if (0 <= AimingAngle && AimingAngle < 90)
+	{
+		AimingAngle += 1;
+		UE_LOG(LogTemp, Warning, TEXT("1 Click Up, Now : %d"), AimingAngle);
+	}
+}
+
+void ASRCharacter::ClickDown()
+{
+	if (0 < AimingAngle && AimingAngle <= 90)
+	{
+		AimingAngle -= 1;
+		UE_LOG(LogTemp, Warning, TEXT("1 Click Down, Now : %d"), AimingAngle);
+	}
+}
+
 void ASRCharacter::Fire()
 {
-	FVector CameraLocation;
+	FVector CameraLocation;	
 	FRotator CameraRotation;
 	GetActorEyesViewPoint(CameraLocation, CameraRotation);
 
 	FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(100.0f, 0.0f, 0.0f));
 	FRotator MuzzleRotation = CameraRotation;
 
-	MuzzleRotation.Pitch += 2.0f;
+	MuzzleRotation.Pitch += AimingAngle;
 	UWorld* World = GetWorld();
 	if (World)
 	{
+		// Bullet
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		ABullet762x39* Bullet = World->SpawnActor<ABullet762x39>(ABullet762x39::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
-		//Bullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
+		Bullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
 		if (Bullet)
 		{
 			FVector LaunchDirection = MuzzleRotation.Vector();
 			Bullet->FireInDirection(LaunchDirection);
 		}
+		// EmptyBullet
+		MuzzleLocation += FVector(0.0f, 15.0f, 0.0f);
+		AEmptyBullet762x39* EmptyBullet = World->SpawnActor<AEmptyBullet762x39>(AEmptyBullet762x39::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
+		EmptyBullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
+		if (EmptyBullet)
+		{
+			FVector LaunchDirection = MuzzleRotation.Vector();
+			EmptyBullet->BounceOff(LaunchDirection);
+		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Fire Bullet"));
 }

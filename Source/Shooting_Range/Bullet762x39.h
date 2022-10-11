@@ -10,4 +10,6 @@ class SHOOTING_RANGE_API ABullet762x39 : public ASRBullet
 	
 public:
 	ABullet762x39();
+
+	virtual void FireInDirection(const FVector& ShootDirection) override;
 };

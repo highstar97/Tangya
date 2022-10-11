@@ -9,11 +9,12 @@ ABullet762x39::ABullet762x39()
 		Shell->SetStaticMesh(BULLET762X39.Object);
 	}
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> EMPTYBULLET762X39(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/Ammunition/SM_Shell_762x39_Empty.SM_Shell_762x39_Empty"));
-	if (EMPTYBULLET762X39.Succeeded())
-	{
-		EmptyShell->SetStaticMesh(EMPTYBULLET762X39.Object);
-	}
-
 	ProjectileMovementComponent->InitialSpeed = 7620.0f;
+}
+
+void ABullet762x39::FireInDirection(const FVector& ShootDirection)
+{
+	Super::FireInDirection(ShootDirection);
+
+	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
 }

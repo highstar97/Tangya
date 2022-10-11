@@ -12,6 +12,11 @@ ASRPlayerController::ASRPlayerController()
 
 void ASRPlayerController::BeginPlay()
 {
+	Super::BeginPlay();
+
+	FInputModeGameOnly InputMode;
+	SetInputMode(InputMode);
+
 	HuddyWidget = CreateWidget<UUserWidget>(this, HuddyWidgetClass);
 	HuddyWidget->AddToViewport();
 }
