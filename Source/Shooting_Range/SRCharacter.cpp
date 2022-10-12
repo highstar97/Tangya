@@ -64,7 +64,7 @@ ASRCharacter::ASRCharacter()
 		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
 	}
 
-	AimingAngle = 2.0f;
+	AimingAngle = 0.0f;
 }
 
 void ASRCharacter::BeginPlay()
@@ -274,37 +274,40 @@ void ASRCharacter::ClickDown()
 	}
 }
 
-// Movement State에 따라, ZoomIn에 따라 총알 발사 위치가 달라져야 함...
+// Shoot Bullet on 70cm forward from Camera Location
 void ASRCharacter::Fire()
 {
-	FVector CameraLocation;	
-	FRotator CameraRotation;
-	GetActorEyesViewPoint(CameraLocation, CameraRotation);
+	FVector CameraLocation = GetActorLocation() + SpringArm->GetRelativeLocation() + Camera->GetRelativeLocation();
+	FRotator CameraRotation = GetViewRotation();
 
-	FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(100.0f, 0.0f, 0.0f));
+	FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
 	FRotator MuzzleRotation = CameraRotation;
 
-	MuzzleRotation.Pitch += AimingAngle;
+	FName ShellEjectSocket(TEXT("ShellEject"));
+	FVector ShellEjectLocation = Weapon->GetSocketLocation(ShellEjectSocket);
+	FRotator ShellEjectRotation = CameraRotation;
+
 	UWorld* World = GetWorld();
 	if (World)
 	{
 		// Bullet
+		MuzzleRotation.Pitch += AimingAngle;
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		ABullet762x39* Bullet = World->SpawnActor<ABullet762x39>(ABullet762x39::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
-		Bullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
+		//Bullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
 		if (Bullet)
 		{
 			FVector LaunchDirection = MuzzleRotation.Vector();
 			Bullet->FireInDirection(LaunchDirection);
 		}
+
 		// EmptyBullet
-		MuzzleLocation += FVector(0.0f, 15.0f, 0.0f);
-		AEmptyBullet762x39* EmptyBullet = World->SpawnActor<AEmptyBullet762x39>(AEmptyBullet762x39::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
-		EmptyBullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
+		AEmptyBullet762x39* EmptyBullet = World->SpawnActor<AEmptyBullet762x39>(AEmptyBullet762x39::StaticClass(), ShellEjectLocation, ShellEjectRotation, SpawnParams);
+		//EmptyBullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
 		if (EmptyBullet)
 		{
-			FVector LaunchDirection = MuzzleRotation.Vector();
+			FVector LaunchDirection = ShellEjectRotation.Vector();
 			EmptyBullet->BounceOff(LaunchDirection);
 		}
 	}
