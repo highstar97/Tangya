@@ -54,6 +54,9 @@ private:
 
 	void Fire();
 
+	UFUNCTION()
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* SpringArm;
@@ -69,6 +72,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* Weapon;
 
+	UPROPERTY(VisibleAnywhere, Category = Sound)
+	USoundWave* AttackSound;
+
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	int AimingAngle;
+	int32 AimingAngle;
 };

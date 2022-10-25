@@ -5,6 +5,7 @@
 #include "SREmptyBullet.h"
 #include "EmptyBullet762x39.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SceneComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -65,6 +66,13 @@ ASRCharacter::ASRCharacter()
 	}
 
 	AimingAngle = 0.0f;
+
+	// Sound
+	static ConstructorHelpers::FObjectFinder<USoundWave> ATTACKSOUND(TEXT("/Game/Indoor_Shooting_Range/Map/FirstPerson/Audio/FirstPersonTemplateWeaponFire02.FirstPersonTemplateWeaponFire02"));
+	if (ATTACKSOUND.Succeeded())
+	{
+		AttackSound = ATTACKSOUND.Object;
+	}
 }
 
 void ASRCharacter::BeginPlay()
@@ -100,6 +108,8 @@ void ASRCharacter::PostInitializeComponents()
 	{
 		UE_LOG(LogTemp, Error, TEXT("SRAnim is nullptr"));
 	}
+
+	SRAnim->OnMontageEnded.AddDynamic(this, &ASRCharacter::OnAttackMontageEnded);
 }
 
 void ASRCharacter::Jump()
@@ -252,7 +262,7 @@ void ASRCharacter::ZoomIn()
 {
 	if (nullptr != SRAnim)
 	{
-		SRAnim->ChangebJoomIn();
+		SRAnim->ChangebZoomIn();
 	}
 }
 
@@ -277,38 +287,53 @@ void ASRCharacter::ClickDown()
 // Shoot Bullet on 70cm forward from Camera Location
 void ASRCharacter::Fire()
 {
-	FVector CameraLocation = GetActorLocation() + SpringArm->GetRelativeLocation() + Camera->GetRelativeLocation();
-	FRotator CameraRotation = GetViewRotation();
-
-	FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
-	FRotator MuzzleRotation = CameraRotation;
-
-	FName ShellEjectSocket(TEXT("ShellEject"));
-	FVector ShellEjectLocation = Weapon->GetSocketLocation(ShellEjectSocket);
-	FRotator ShellEjectRotation = CameraRotation;
-
-	UWorld* World = GetWorld();
-	if (World)
+	if (!SRAnim->GetbIsAttacking())
 	{
-		// Bullet
-		MuzzleRotation.Pitch += AimingAngle;
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-		ABullet762x39* Bullet = World->SpawnActor<ABullet762x39>(ABullet762x39::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
-		//Bullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
-		if (Bullet)
+		FVector CameraLocation = GetActorLocation() + SpringArm->GetRelativeLocation() + Camera->GetRelativeLocation();
+		FRotator CameraRotation = GetViewRotation();
+
+		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
+		FRotator MuzzleRotation = CameraRotation;
+
+		FName ShellEjectSocket(TEXT("ShellEject"));
+		FVector ShellEjectLocation = Weapon->GetSocketLocation(ShellEjectSocket);
+		FRotator ShellEjectRotation = CameraRotation;
+
+		UWorld* World = GetWorld();
+		if (World)
 		{
-			FVector LaunchDirection = MuzzleRotation.Vector();
-			Bullet->FireInDirection(LaunchDirection);
+			// Bullet
+			MuzzleRotation.Pitch += AimingAngle;
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			ABullet762x39* Bullet = World->SpawnActor<ABullet762x39>(ABullet762x39::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
+			//Bullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
+			if (Bullet)
+			{
+				FVector LaunchDirection = MuzzleRotation.Vector();
+				Bullet->FireInDirection(LaunchDirection);
+			}
+
+			// EmptyBullet
+			AEmptyBullet762x39* EmptyBullet = World->SpawnActor<AEmptyBullet762x39>(AEmptyBullet762x39::StaticClass(), ShellEjectLocation, ShellEjectRotation, SpawnParams);
+			//EmptyBullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
+			if (EmptyBullet)
+			{
+				FVector LaunchDirection = ShellEjectRotation.Vector();
+				EmptyBullet->BounceOff(LaunchDirection);
+			}
 		}
 
-		// EmptyBullet
-		AEmptyBullet762x39* EmptyBullet = World->SpawnActor<AEmptyBullet762x39>(AEmptyBullet762x39::StaticClass(), ShellEjectLocation, ShellEjectRotation, SpawnParams);
-		//EmptyBullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
-		if (EmptyBullet)
-		{
-			FVector LaunchDirection = ShellEjectRotation.Vector();
-			EmptyBullet->BounceOff(LaunchDirection);
-		}
+		UGameplayStatics::PlaySound2D(World, AttackSound);
+
+		SRAnim->PlayAttackMontage();
+	}
+}
+
+void ASRCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (SRAnim->GetbIsAttacking())
+	{
+		SRAnim->SetbIsAttacking(false);
 	}
 }
