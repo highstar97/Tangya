@@ -287,6 +287,11 @@ void ASRCharacter::ClickDown()
 // Shoot Bullet on 70cm forward from Camera Location
 void ASRCharacter::Fire()
 {
+	if (SRAnim->GetbCrouching())
+	{
+		//UE_LOG(LogAnimation, Warning, TEXT("Can't Fire Bullet on Crouching State!"));
+		return;
+	}
 	if (!SRAnim->GetbIsAttacking())
 	{
 		SRAnim->SetbIsAttacking(true);
