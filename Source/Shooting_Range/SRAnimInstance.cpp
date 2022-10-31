@@ -58,10 +58,10 @@ void USRAnimInstance::PlayAttackMontage()
 	bIsAttacking = true;
 	if (bZoomIn)
 	{
-		Montage_Play(Ironsight_AttackMontage, 1.0f);
+		Montage_Play(Ironsight_AttackMontage);
 	}
 	else
 	{
-		Montage_Play(AttackMontage, 1.0f);
+		Montage_Play(AttackMontage);
 	}
 }

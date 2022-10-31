@@ -289,6 +289,7 @@ void ASRCharacter::Fire()
 {
 	if (!SRAnim->GetbIsAttacking())
 	{
+		SRAnim->SetbIsAttacking(true);
 		FVector CameraLocation = GetActorLocation() + SpringArm->GetRelativeLocation() + Camera->GetRelativeLocation();
 		FRotator CameraRotation = GetViewRotation();
 
