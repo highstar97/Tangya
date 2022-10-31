@@ -3,6 +3,9 @@
 #include "GameFramework/PlayerController.h"
 #include "SRPlayerController.generated.h"
 
+class USRGamePlayWidget;
+class ASRPlayerState;
+
 UCLASS()
 class SHOOTING_RANGE_API ASRPlayerController : public APlayerController
 {
@@ -15,19 +18,27 @@ public:
 	virtual void OnPossess(APawn* aPawn) override;
 	void ChangeInputMode(bool bGameMode = true);
 
+	UFUNCTION(BlueprintCallable)
+	void AddGameScore(int EarnedScore);
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void SetupInputComponent() override;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
-	TSubclassOf<UUserWidget> HuddyWidgetClass;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
-	TSubclassOf<class USRGamePlayWidget> MenuWidgetClass;
 
 private:
 	void OnGamePause();
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<UUserWidget> HuddyWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<USRGamePlayWidget> MenuWidgetClass;
+
+private:
+	UPROPERTY()
+	ASRPlayerState* SRPlayerState;
 
 	UPROPERTY()
 	UUserWidget* HuddyWidget;

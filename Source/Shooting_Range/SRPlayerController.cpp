@@ -1,4 +1,5 @@
 #include "SRPlayerController.h"
+#include "SRPlayerState.h"
 #include "SRGamePlayWidget.h"
 #include "Blueprint/UserWidget.h"
 
@@ -17,20 +18,6 @@ ASRPlayerController::ASRPlayerController()
 	}
 }
 
-void ASRPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-
-	FInputModeGameOnly InputMode;
-	ChangeInputMode(true);
-
-	PlayerCameraManager->ViewPitchMin = -45.0f;
-	PlayerCameraManager->ViewPitchMax = 45.0f;
-
-	HuddyWidget = CreateWidget<UUserWidget>(this, HuddyWidgetClass);
-	HuddyWidget->AddToViewport();
-}
-
 void ASRPlayerController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -41,12 +28,6 @@ void ASRPlayerController::OnPossess(APawn* aPawn)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player Controller OnPossess"));
 	Super::OnPossess(aPawn);
-}
-
-void ASRPlayerController::SetupInputComponent()
-{
-	Super::SetupInputComponent();
-	InputComponent->BindAction(TEXT("GamePause"), EInputEvent::IE_Pressed, this, &ASRPlayerController::OnGamePause);
 }
 
 void ASRPlayerController::ChangeInputMode(bool bGameMode)
@@ -61,6 +42,33 @@ void ASRPlayerController::ChangeInputMode(bool bGameMode)
 		SetInputMode(UIInputMode);
 		bShowMouseCursor = true;
 	}
+}
+
+void ASRPlayerController::AddGameScore(int EarnedScore)
+{
+	SRPlayerState->AddGameScore(EarnedScore);
+}
+
+void ASRPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FInputModeGameOnly InputMode;
+	ChangeInputMode(true);
+
+	PlayerCameraManager->ViewPitchMin = -45.0f;
+	PlayerCameraManager->ViewPitchMax = 45.0f;
+
+	HuddyWidget = CreateWidget<UUserWidget>(this, HuddyWidgetClass);
+	HuddyWidget->AddToViewport();
+
+	SRPlayerState = Cast<ASRPlayerState>(PlayerState);
+}
+
+void ASRPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	InputComponent->BindAction(TEXT("GamePause"), EInputEvent::IE_Pressed, this, &ASRPlayerController::OnGamePause);
 }
 
 void ASRPlayerController::OnGamePause()
