@@ -11,6 +11,9 @@ class SHOOTING_RANGE_API USRAnimInstance : public UAnimInstance
 public:
 	USRAnimInstance();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	
+	bool GetbIsAttacking() { return bIsAttacking; }
+	void SetbIsAttacking(bool boolean);
 
 	bool GetbCanJump() { return bCanJump; }
 	void SetbCanJump(bool boolean);
@@ -18,9 +21,14 @@ public:
 	bool GetbCrouching() { return bCrouching; }
 	void SetbCrouching(bool boolean);
 
-	void ChangebJoomIn();
+	void ChangebZoomIn();
+
+	void PlayAttackMontage();
 
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, Meta = (AllowPrivateAccess = true))
+	bool bIsAttacking;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character, Meta = (AllowPrivateAccess = true))
 	bool bZoomIn;
 
@@ -35,4 +43,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	float Direction;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* AttackMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* Ironsight_AttackMontage;
 };

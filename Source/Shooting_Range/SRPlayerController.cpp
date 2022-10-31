@@ -1,5 +1,6 @@
 #include "SRPlayerController.h"
 #include "SRGamePlayWidget.h"
+#include "Blueprint/UserWidget.h"
 
 ASRPlayerController::ASRPlayerController()
 {
@@ -8,18 +9,44 @@ ASRPlayerController::ASRPlayerController()
 	{
 		MenuWidgetClass = UI_PAUSE_C.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUDDY_C(TEXT("/Game/Blueprints/Huddy_BP.Huddy_BP_C"));
+	if (UI_HUDDY_C.Succeeded())
+	{
+		HuddyWidgetClass = UI_HUDDY_C.Class;
+	}
+}
+
+void ASRPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FInputModeGameOnly InputMode;
+	ChangeInputMode(true);
+
+	PlayerCameraManager->ViewPitchMin = -45.0f;
+	PlayerCameraManager->ViewPitchMax = 45.0f;
+
+	HuddyWidget = CreateWidget<UUserWidget>(this, HuddyWidgetClass);
+	HuddyWidget->AddToViewport();
 }
 
 void ASRPlayerController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	UE_LOG(LogTemp, Log, TEXT("Player Controller PostInitializeComponetns"));
+	UE_LOG(LogTemp, Warning, TEXT("Player Controller PostInitializeComponents"));
 }
 
 void ASRPlayerController::OnPossess(APawn* aPawn)
 {
-	UE_LOG(LogTemp, Log, TEXT("Player Controller OnPossess"));
+	UE_LOG(LogTemp, Warning, TEXT("Player Controller OnPossess"));
 	Super::OnPossess(aPawn);
+}
+
+void ASRPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	InputComponent->BindAction(TEXT("GamePause"), EInputEvent::IE_Pressed, this, &ASRPlayerController::OnGamePause);
 }
 
 void ASRPlayerController::ChangeInputMode(bool bGameMode)
@@ -34,19 +61,6 @@ void ASRPlayerController::ChangeInputMode(bool bGameMode)
 		SetInputMode(UIInputMode);
 		bShowMouseCursor = true;
 	}
-}
-
-void ASRPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-
-	ChangeInputMode(true);
-}
-
-void ASRPlayerController::SetupInputComponent()
-{
-	Super::SetupInputComponent();
-	InputComponent->BindAction(TEXT("GamePause"), EInputEvent::IE_Pressed, this, &ASRPlayerController::OnGamePause);
 }
 
 void ASRPlayerController::OnGamePause()

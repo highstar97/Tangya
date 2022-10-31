@@ -7,9 +7,10 @@ UCLASS()
 class SHOOTING_RANGE_API ASRPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
 public:
 	ASRPlayerController();
+	
 	virtual void PostInitializeComponents() override;
 	virtual void OnPossess(APawn* aPawn) override;
 	void ChangeInputMode(bool bGameMode = true);
@@ -20,10 +21,16 @@ protected:
 	virtual void SetupInputComponent() override;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<UUserWidget> HuddyWidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<class USRGamePlayWidget> MenuWidgetClass;
 
 private:
 	void OnGamePause();
+
+	UPROPERTY()
+	UUserWidget* HuddyWidget;
 
 	UPROPERTY()
 	class USRGamePlayWidget* MenuWidget;

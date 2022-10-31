@@ -1,6 +1,13 @@
 #include "SRCharacter.h"
 #include "SRAnimInstance.h"
+#include "SRBullet.h"
+#include "Bullet762x39.h"
+#include "SREmptyBullet.h"
+#include "EmptyBullet762x39.h"
+#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SceneComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Gameframework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -43,8 +50,9 @@ ASRCharacter::ASRCharacter()
 		GetMesh()->SetAnimInstanceClass(THIRDPERSON_ANIM.Class);
 	}
 
-	SetControlMode(EControlMode::ThirdPersonView);
+	SetControlMode(EControlView::ThirdPersonView);
 
+	// Equipt Weapon
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	if (GetMesh()->DoesSocketExist(WeaponSocket))
 	{
@@ -55,6 +63,15 @@ ASRCharacter::ASRCharacter()
 			Weapon->SetSkeletalMesh(SK_WEAPON.Object);
 		}
 		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
+	}
+
+	AimingAngle = 0.0f;
+
+	// Sound
+	static ConstructorHelpers::FObjectFinder<USoundWave> ATTACKSOUND(TEXT("/Game/Indoor_Shooting_Range/Map/FirstPerson/Audio/FirstPersonTemplateWeaponFire02.FirstPersonTemplateWeaponFire02"));
+	if (ATTACKSOUND.Succeeded())
+	{
+		AttackSound = ATTACKSOUND.Object;
 	}
 }
 
@@ -70,8 +87,11 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed ,this, &ASRCharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ASRCharacter::Crouch);
-	PlayerInputComponent->BindAction(TEXT("ViewChange"), EInputEvent::IE_Pressed, this, &ASRCharacter::ViewChange);
+	PlayerInputComponent->BindAction(TEXT("ChangeControlView"), EInputEvent::IE_Pressed, this, &ASRCharacter::ChangeControlView);
 	PlayerInputComponent->BindAction(TEXT("ZoomIn"), EInputEvent::IE_Pressed, this, &ASRCharacter::ZoomIn);
+	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ASRCharacter::Fire);
+	PlayerInputComponent->BindAction(TEXT("Click Up"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickUp);
+	PlayerInputComponent->BindAction(TEXT("Click Down"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickDown);
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ASRCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ASRCharacter::MoveRight);
@@ -88,6 +108,8 @@ void ASRCharacter::PostInitializeComponents()
 	{
 		UE_LOG(LogTemp, Error, TEXT("SRAnim is nullptr"));
 	}
+
+	SRAnim->OnMontageEnded.AddDynamic(this, &ASRCharacter::OnAttackMontageEnded);
 }
 
 void ASRCharacter::Jump()
@@ -102,7 +124,16 @@ void ASRCharacter::Jump()
 
 void ASRCharacter::Crouch()
 {
-	SRAnim->GetbCrouching() == true ? SRAnim->SetbCrouching(false) : SRAnim->SetbCrouching(true);
+	if (SRAnim->GetbCrouching())
+	{
+		SRAnim->SetbCrouching(false);
+		ChangeMovementState(EMovementState::Idle);
+	}
+	else
+	{
+		SRAnim->SetbCrouching(true);
+		ChangeMovementState(EMovementState::Crouching);
+	}
 }
 
 void ASRCharacter::MoveForward(float NewAxisValue)
@@ -147,46 +178,81 @@ void ASRCharacter::TurnRight(float NewAxisValue)
 	}
 }
 
-void ASRCharacter::ViewChange()
+void ASRCharacter::ChangeControlView()
 {
-	switch (CurrentControlMode)
+	switch (CurrentControlView)
 	{
-	case EControlMode::FirstPersonView:
+	case EControlView::FirstPersonView:
 	{
-		SetControlMode(EControlMode::ThirdPersonView);
+		SetControlMode(EControlView::ThirdPersonView);
 		break;
 	}
-	case EControlMode::ThirdPersonView:
+	case EControlView::ThirdPersonView:
 	{
-		SetControlMode(EControlMode::FirstPersonView);
+		SetControlMode(EControlView::FirstPersonView);
 		break;
 	}
 	}
 }
 
-void ASRCharacter::SetControlMode(EControlMode NewControlMode)
+void ASRCharacter::SetControlMode(EControlView NewControlMode)
 {
-	CurrentControlMode = NewControlMode;
+	CurrentControlView = NewControlMode;
 
-	switch (CurrentControlMode)
+	switch (CurrentControlView)
 	{
-	case EControlMode::FirstPersonView:
+	case EControlView::FirstPersonView:
 	{
 		SpringArm->TargetArmLength = -30.0f;
 		SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
 		break;
 	}
-	case EControlMode::ThirdPersonView:
+	case EControlView::ThirdPersonView:
 	{
 		SpringArm->TargetArmLength = 250.0f;
 		SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+		break;
+	}
+	}
+}
 
-		if (nullptr != Controller)		// 처음 시작 시 적용 안됨 -> 나중에 함수로 빼서 해결 필요해 보임
-		{
-			APlayerController* const PlayerController = CastChecked<APlayerController>(Controller);
-			PlayerController->PlayerCameraManager->ViewPitchMin = -45.0f;
-			PlayerController->PlayerCameraManager->ViewPitchMax = 45.0f;
-		}
+void ASRCharacter::ChangeMovementState(EMovementState NewState)
+{
+	switch (NewState)
+	{
+	case(EMovementState::Idle):
+	{
+		FVector NewCapsuleLocation = GetActorLocation();
+		NewCapsuleLocation.Z = 303.650208f;
+		GetCapsuleComponent()->SetCapsuleHalfHeight(100.0f);
+		GetCapsuleComponent()->SetRelativeLocation(NewCapsuleLocation);
+
+		FVector NewMeshLocation = GetMesh()->GetRelativeLocation();
+		NewMeshLocation.Z = -100.0f;
+		GetMesh()->SetRelativeLocation(NewMeshLocation);
+
+		SpringArm->TargetArmLength = 250.0f;
+		SpringArm->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+		Camera->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+
+		GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+		break;
+	}
+	case(EMovementState::Crouching):
+	{
+		FVector NewCapsuleLocation = GetActorLocation();
+		NewCapsuleLocation.Z = 263.650208f;
+		GetCapsuleComponent()->SetCapsuleHalfHeight(60.0f);
+		GetCapsuleComponent()->SetRelativeLocation(NewCapsuleLocation);
+
+		FVector NewMeshLocation = GetMesh()->GetRelativeLocation();
+		NewMeshLocation.Z = -60.0f;
+		GetMesh()->SetRelativeLocation(NewMeshLocation);
+
+		SpringArm->TargetArmLength = 180.0f;
+		Camera->SetRelativeLocation(FVector(0.0f, 0.0f, -25.0f));
+
+		GetCharacterMovement()->MaxWalkSpeed = 250.0f;
 		break;
 	}
 	}
@@ -196,6 +262,84 @@ void ASRCharacter::ZoomIn()
 {
 	if (nullptr != SRAnim)
 	{
-		SRAnim->ChangebJoomIn();
+		SRAnim->ChangebZoomIn();
+	}
+}
+
+void ASRCharacter::ClickUp()
+{
+	if (0 <= AimingAngle && AimingAngle < 45)
+	{
+		AimingAngle += 1;
+		UE_LOG(LogTemp, Warning, TEXT("1 Click Up, Now : %d"), AimingAngle);
+	}
+}
+
+void ASRCharacter::ClickDown()
+{
+	if (0 < AimingAngle && AimingAngle <= 45)
+	{
+		AimingAngle -= 1;
+		UE_LOG(LogTemp, Warning, TEXT("1 Click Down, Now : %d"), AimingAngle);
+	}
+}
+
+// Shoot Bullet on 70cm forward from Camera Location
+void ASRCharacter::Fire()
+{
+	if (SRAnim->GetbCrouching())
+	{
+		//UE_LOG(LogAnimation, Warning, TEXT("Can't Fire Bullet on Crouching State!"));
+		return;
+	}
+	if (!SRAnim->GetbIsAttacking())
+	{
+		SRAnim->SetbIsAttacking(true);
+		FVector CameraLocation = GetActorLocation() + SpringArm->GetRelativeLocation() + Camera->GetRelativeLocation();
+		FRotator CameraRotation = GetViewRotation();
+
+		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
+		FRotator MuzzleRotation = CameraRotation;
+
+		FName ShellEjectSocket(TEXT("ShellEject"));
+		FVector ShellEjectLocation = Weapon->GetSocketLocation(ShellEjectSocket);
+		FRotator ShellEjectRotation = CameraRotation;
+
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			// Bullet
+			MuzzleRotation.Pitch += AimingAngle;
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			ABullet762x39* Bullet = World->SpawnActor<ABullet762x39>(ABullet762x39::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
+			//Bullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
+			if (Bullet)
+			{
+				FVector LaunchDirection = MuzzleRotation.Vector();
+				Bullet->FireInDirection(LaunchDirection);
+			}
+
+			// EmptyBullet
+			AEmptyBullet762x39* EmptyBullet = World->SpawnActor<AEmptyBullet762x39>(AEmptyBullet762x39::StaticClass(), ShellEjectLocation, ShellEjectRotation, SpawnParams);
+			//EmptyBullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
+			if (EmptyBullet)
+			{
+				FVector LaunchDirection = ShellEjectRotation.Vector();
+				EmptyBullet->BounceOff(LaunchDirection);
+			}
+		}
+
+		UGameplayStatics::PlaySound2D(World, AttackSound);
+
+		SRAnim->PlayAttackMontage();
+	}
+}
+
+void ASRCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (SRAnim->GetbIsAttacking())
+	{
+		SRAnim->SetbIsAttacking(false);
 	}
 }
