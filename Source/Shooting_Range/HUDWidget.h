@@ -12,17 +12,14 @@ class SHOOTING_RANGE_API UHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void BindWeaponState();
 	void BindPlayerState(ASRPlayerState* PlayerState);
 
 protected:
 	void NativeConstruct() override;
-	void UpdateWeaponState();
+
 	void UpdatePlayerState();
 
 private:
-	//TWeakObjectPtr<UWeaponState>
-
 	TWeakObjectPtr<ASRPlayerState> CurrentPlayerState;
 
 private:

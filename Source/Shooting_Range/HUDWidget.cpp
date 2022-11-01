@@ -2,11 +2,6 @@
 #include "SRPlayerState.h"
 #include "Components/TextBlock.h"
 
-void UHUDWidget::BindWeaponState()
-{
-
-}
-
 void UHUDWidget::BindPlayerState(ASRPlayerState* PlayerState)
 {
 	if (nullptr == PlayerState)
@@ -23,11 +18,6 @@ void UHUDWidget::NativeConstruct()
 
 }
 
-void UHUDWidget::UpdateWeaponState()
-{
-
-}
-
 void UHUDWidget::UpdatePlayerState()
 {
 	if (nullptr == CurrentPlayerState)
@@ -36,4 +26,6 @@ void UHUDWidget::UpdatePlayerState()
 	}
 
 	Score->SetText(FText::FromString(FString::FromInt(CurrentPlayerState->GetGameScore())));
+	CurrentBullets->SetText(FText::FromString(FString::FromInt(CurrentPlayerState->GetCurrentBullets())));
+	TotalBullets->SetText(FText::FromString(FString("/ ") + FString::FromInt(CurrentPlayerState->GetTotalBullets())));
 }

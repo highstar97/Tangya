@@ -17,9 +17,21 @@ public:
 
 	int32 GetGameScore() { return GameScore; }
 
+	void SetCurrentBullets(int32 NumOfBullets);
+	int32 GetCurrentBullets() { return CurrentBullets; }
+
+	void SetTotalBullets(int32 NumOfBullets);
+	int32 GetTotalBullets() { return TotalBullets; }
+
 	FOnPlayerStateChangedDelegate OnPlayerStateChanged;
 
 private:
 	UPROPERTY(Transient)
 	int32 GameScore;
+
+	UPROPERTY(Transient)
+	int32 CurrentBullets;
+
+	UPROPERTY(Transient)
+	int32 TotalBullets;
 };
