@@ -1,10 +1,17 @@
 #include "SRPlayerController.h"
 #include "SRPlayerState.h"
+#include "HUDWidget.h"
 #include "SRGamePlayWidget.h"
 #include "Blueprint/UserWidget.h"
 
 ASRPlayerController::ASRPlayerController()
 {
+	static ConstructorHelpers::FClassFinder<UHUDWidget> UI_HUD_C(TEXT("/Game/UI/UI_HUD.UI_HUD_C"));
+	if (UI_HUD_C.Succeeded())
+	{
+		HUDWidgetClass = UI_HUD_C.Class;
+	}
+
 	static ConstructorHelpers::FClassFinder<USRGamePlayWidget> UI_PAUSE_C(TEXT("/Game/UI/UI_Pause.UI_Pause_C"));
 	if (UI_PAUSE_C.Succeeded())
 	{
@@ -59,10 +66,18 @@ void ASRPlayerController::BeginPlay()
 	PlayerCameraManager->ViewPitchMin = -45.0f;
 	PlayerCameraManager->ViewPitchMax = 45.0f;
 
+	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
+	HUDWidget->AddToViewport();
+
 	HuddyWidget = CreateWidget<UUserWidget>(this, HuddyWidgetClass);
 	HuddyWidget->AddToViewport();
 
 	SRPlayerState = Cast<ASRPlayerState>(PlayerState);
+	if (nullptr != SRPlayerState)
+	{
+		HUDWidget->BindPlayerState(SRPlayerState);
+		SRPlayerState->OnPlayerStateChanged.Broadcast();
+	}
 }
 
 void ASRPlayerController::SetupInputComponent()

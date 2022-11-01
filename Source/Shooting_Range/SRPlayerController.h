@@ -3,6 +3,7 @@
 #include "GameFramework/PlayerController.h"
 #include "SRPlayerController.generated.h"
 
+class UHUDWidget;
 class USRGamePlayWidget;
 class ASRPlayerState;
 
@@ -31,6 +32,9 @@ private:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<UHUDWidget> HUDWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<UUserWidget> HuddyWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
@@ -39,6 +43,9 @@ protected:
 private:
 	UPROPERTY()
 	ASRPlayerState* SRPlayerState;
+
+	UPROPERTY()
+	UHUDWidget* HUDWidget;
 
 	UPROPERTY()
 	UUserWidget* HuddyWidget;

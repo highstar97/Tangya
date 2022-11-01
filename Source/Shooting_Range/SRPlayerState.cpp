@@ -8,4 +8,5 @@ ASRPlayerState::ASRPlayerState()
 void ASRPlayerState::AddGameScore(int EarnedScore)
 {
 	GameScore += EarnedScore;
+	OnPlayerStateChanged.Broadcast();
 }

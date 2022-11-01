@@ -3,6 +3,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HUDWidget.generated.h"
 
+class ASRPlayerState;
 class UTextBlock;
 
 UCLASS()
@@ -12,7 +13,7 @@ class SHOOTING_RANGE_API UHUDWidget : public UUserWidget
 
 public:
 	void BindWeaponState();
-	void BindPlayerState();
+	void BindPlayerState(ASRPlayerState* PlayerState);
 
 protected:
 	void NativeConstruct() override;
@@ -21,7 +22,8 @@ protected:
 
 private:
 	//TWeakObjectPtr<UWeaponState>
-	//TWeakObjectPtr<UPlayerState>
+
+	TWeakObjectPtr<ASRPlayerState> CurrentPlayerState;
 
 private:
 	UPROPERTY(meta = (BindWidget))
