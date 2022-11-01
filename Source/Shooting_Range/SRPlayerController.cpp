@@ -1,7 +1,9 @@
 #include "SRPlayerController.h"
+#include "Shooting_RangeGameModeBase.h"
 #include "SRPlayerState.h"
 #include "HUDWidget.h"
 #include "SRGamePlayWidget.h"
+#include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
 
 ASRPlayerController::ASRPlayerController()
@@ -56,6 +58,11 @@ void ASRPlayerController::AddGameScore(int EarnedScore)
 	SRPlayerState->AddGameScore(EarnedScore);
 }
 
+void ASRPlayerController::SubtractCurrentBullet()
+{
+	SRPlayerState->SetCurrentBullets(SRPlayerState->GetCurrentBullets() - 1);
+}
+
 void ASRPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -76,6 +83,8 @@ void ASRPlayerController::BeginPlay()
 	if (nullptr != SRPlayerState)
 	{
 		HUDWidget->BindPlayerState(SRPlayerState);
+		SRPlayerState->SetTotalBullets(Cast<AShooting_RangeGameModeBase>(GetWorld()->GetAuthGameMode())->GetTotalBullets());
+		SRPlayerState->SetCurrentBullets(SRPlayerState->GetTotalBullets());
 		SRPlayerState->OnPlayerStateChanged.Broadcast();
 	}
 }

@@ -1,4 +1,5 @@
 #include "SRCharacter.h"
+#include "SRPlayerController.h"
 #include "SRAnimInstance.h"
 #include "SRBullet.h"
 #include "Bullet762x39.h"
@@ -287,6 +288,11 @@ void ASRCharacter::ClickDown()
 // Shoot Bullet on 70cm forward from Camera Location
 void ASRCharacter::Fire()
 {
+	ASRPlayerController* SRPlayerController = Cast<ASRPlayerController>(GetController());
+	if (nullptr == SRPlayerController)
+	{
+		return;
+	}
 	if (SRAnim->GetbCrouching())
 	{
 		//UE_LOG(LogAnimation, Warning, TEXT("Can't Fire Bullet on Crouching State!"));
@@ -333,6 +339,7 @@ void ASRCharacter::Fire()
 		UGameplayStatics::PlaySound2D(World, AttackSound);
 
 		SRAnim->PlayAttackMontage();
+		SRPlayerController->SubtractCurrentBullet();
 	}
 }
 

@@ -22,6 +22,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddGameScore(int EarnedScore);
 
+	void SubtractCurrentBullet();
+
 protected:
 	virtual void BeginPlay() override;
 

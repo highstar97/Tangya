@@ -8,6 +8,8 @@ AShooting_RangeGameModeBase::AShooting_RangeGameModeBase()
 	DefaultPawnClass = ASRCharacter::StaticClass();
 	PlayerControllerClass = ASRPlayerController::StaticClass();
 	PlayerStateClass = ASRPlayerState::StaticClass();
+
+	TotalBullets = 10;
 }
 
 void AShooting_RangeGameModeBase::PostLogin(APlayerController* NewPlayer)

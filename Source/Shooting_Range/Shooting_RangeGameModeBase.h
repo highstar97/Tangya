@@ -12,4 +12,10 @@ public:
 	AShooting_RangeGameModeBase();
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	int32 GetTotalBullets() { return TotalBullets; }
+
+private:
+	UPROPERTY()
+	int32 TotalBullets;
 };
