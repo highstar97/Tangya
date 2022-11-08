@@ -61,7 +61,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* SpringArm;
 
-	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	UCameraComponent* Camera;
 
 	EControlView CurrentControlView = EControlView::ThirdPersonView;
