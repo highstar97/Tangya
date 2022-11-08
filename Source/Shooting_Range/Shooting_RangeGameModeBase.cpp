@@ -18,3 +18,10 @@ void AShooting_RangeGameModeBase::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 	UE_LOG(LogTemp, Warning, TEXT("PostLogin End"));
 }
+
+void AShooting_RangeGameModeBase::NumOfBulletIsZero(ASRPlayerController* Controller)
+{
+	ensure(nullptr != Controller);
+	Controller->OnGameEnd();
+	UE_LOG(LogTemp, Error, TEXT("Game End"));
+}

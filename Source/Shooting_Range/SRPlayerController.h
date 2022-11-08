@@ -5,6 +5,8 @@
 
 class UHUDWidget;
 class USRGamePlayWidget;
+class USRCheckRankWidget;
+class USRRankingWidget;
 class ASRPlayerState;
 
 UCLASS()
@@ -19,10 +21,16 @@ public:
 	virtual void OnPossess(APawn* aPawn) override;
 	void ChangeInputMode(bool bGameMode = true);
 
+	ASRPlayerState* GetPlayerState() { return SRPlayerState; };
+
 	UFUNCTION(BlueprintCallable)
 	void AddGameScore(int EarnedScore);
 
 	void SubtractCurrentBullet();
+
+	void OnGameEnd();
+
+	void ShowRankingWidget();
 
 protected:
 	virtual void BeginPlay() override;
@@ -42,10 +50,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<USRGamePlayWidget> MenuWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<USRCheckRankWidget> CheckRankWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<USRRankingWidget> RankingWidgetClass;
+
 private:
 	UPROPERTY()
 	ASRPlayerState* SRPlayerState;
-
+	 
 	UPROPERTY()
 	UHUDWidget* HUDWidget;
 
@@ -53,7 +67,13 @@ private:
 	UUserWidget* HuddyWidget;
 
 	UPROPERTY()
-	class USRGamePlayWidget* MenuWidget;
+	USRGamePlayWidget* MenuWidget;
+
+	UPROPERTY()
+	USRCheckRankWidget* CheckRankWidget;
+
+	UPROPERTY()
+	USRRankingWidget* RankingWidget;
 
 	FInputModeGameOnly GameInputMode;
 	FInputModeUIOnly UIInputMode;

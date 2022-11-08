@@ -5,6 +5,8 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnPlayerStateChangedDelegate);
 
+class ASRPlayerController;
+
 UCLASS()
 class SHOOTING_RANGE_API ASRPlayerState : public APlayerState
 {
@@ -13,8 +15,9 @@ class SHOOTING_RANGE_API ASRPlayerState : public APlayerState
 public:
 	ASRPlayerState();
 
-	void AddGameScore(int EarnedScore);
+	void BindPlayerController(ASRPlayerController* Controller) { PlayerController = Controller; };
 
+	void AddGameScore(int EarnedScore);
 	int32 GetGameScore() { return GameScore; }
 
 	void SetCurrentBullets(int32 NumOfBullets);
@@ -26,6 +29,9 @@ public:
 	FOnPlayerStateChangedDelegate OnPlayerStateChanged;
 
 private:
+	UPROPERTY()
+	ASRPlayerController* PlayerController;
+
 	UPROPERTY(Transient)
 	int32 GameScore;
 
