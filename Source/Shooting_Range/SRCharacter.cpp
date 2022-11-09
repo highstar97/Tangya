@@ -66,6 +66,16 @@ ASRCharacter::ASRCharacter()
 	}
 
 	AimingAngle = 0.0f;
+	
+	// attach ADSCamera to weapon
+	FName ADSCameraSocket(TEXT("ADS_Socket"));
+	if (Weapon->DoesSocketExist(ADSCameraSocket))
+	{
+		ADSCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ADSCAMERA"));
+		
+		ADSCamera->SetupAttachment(Weapon, ADSCameraSocket);
+		ADSCamera->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FRotator(90.0f, 90.0f, 0.0f));
+	}
 
 	// Sound
 	static ConstructorHelpers::FObjectFinder<USoundWave> ATTACKSOUND(TEXT("/Game/Indoor_Shooting_Range/Map/FirstPerson/Audio/FirstPersonTemplateWeaponFire02.FirstPersonTemplateWeaponFire02"));
@@ -263,7 +273,18 @@ void ASRCharacter::ZoomIn()
 	if (nullptr != SRAnim)
 	{
 		SRAnim->ChangebZoomIn();
+		if (SRAnim->GetbZoomIn())
+		{
+			Camera->Deactivate();
+			ADSCamera->Activate();
+		}
+		else
+		{
+			Camera->Activate();
+			ADSCamera->Deactivate();
+		}
 	}
+	
 }
 
 void ASRCharacter::ClickUp()
