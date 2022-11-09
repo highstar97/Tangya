@@ -60,5 +60,5 @@ void USRCheckRankWidget::PressedYes()
 
 void USRCheckRankWidget::PressedNo()
 {
-	// Add WarningWidget to Viewport?
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainLobby"));
 }
