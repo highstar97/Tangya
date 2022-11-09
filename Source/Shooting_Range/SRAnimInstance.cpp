@@ -8,6 +8,8 @@ USRAnimInstance::USRAnimInstance()
 	bCrouching = false;
 	Speed = 0.0f;
 	Direction = 0.0f;
+	UpDown = 0.0f;
+	LeftRight = 0.0f;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> ATTACK_MONTAGE(TEXT("/Game/AnimStarterPack/Fire_Rifle_Hip_Montage.Fire_Rifle_Hip_Montage"));
 	if (ATTACK_MONTAGE.Succeeded())
@@ -30,6 +32,22 @@ void USRAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (::IsValid(Pawn))
 	{
 		Speed = sqrt(pow(Pawn->GetVelocity().X, 2) + pow(Pawn->GetVelocity().Y, 2));
+		Direction = CalculateDirection(Pawn->GetVelocity(), Pawn->GetActorRotation());
+		FVector EulerVector = Pawn->GetControlRotation().Euler();
+		UpDown = EulerVector.Y <= 45.0f ? EulerVector.Y : EulerVector.Y - 360.0f;
+		if (Speed > 0.0f)
+		{
+			LastRotationYaw = Pawn->GetControlRotation().Euler().Z;
+		}
+		if (LastRotationYaw < 180.0f)
+		{
+			LeftRight = EulerVector.Z <= LastRotationYaw + 180.0f ? EulerVector.Z - LastRotationYaw : EulerVector.Z - EulerVector.Z - 360.0f;
+		}
+		else
+		{
+			LeftRight = EulerVector.Z >= LastRotationYaw - 180.0f ? EulerVector.Z - LastRotationYaw : EulerVector.Z - EulerVector.Z + 360.0f;
+		}
+		UE_LOG(LogTemp, Log, TEXT("%f, %f, %f"), EulerVector.Z, LastRotationYaw, LeftRight);
 	}
 }
 
