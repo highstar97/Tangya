@@ -361,6 +361,11 @@ void ASRCharacter::Fire()
 			{
 				FVector LaunchDirection = MuzzleRotation.Vector();
 				Bullet->FireInDirection(LaunchDirection);
+				float Roll = 0.0f;
+				float Pitch = FMath::RandRange(-2.0f, 2.0f);
+				float Yaw = FMath::RandRange(-2.0f, 2.0f);
+				FRotator RandRotation = FRotator(Pitch, Yaw, Roll);
+				SRPlayerController->SetControlRotation(GetControlRotation() + RandRotation);
 			}
 
 			// EmptyBullet
