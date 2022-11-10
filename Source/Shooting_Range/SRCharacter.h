@@ -48,7 +48,7 @@ private:
 	void ChangeMovementState(EMovementState NewState);
 
 	void ZoomIn();
-
+	
 	void ClickUp();
 	void ClickDown();
 
@@ -63,6 +63,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UCameraComponent* ADSCamera;
 
 	EControlView CurrentControlView = EControlView::ThirdPersonView;
 

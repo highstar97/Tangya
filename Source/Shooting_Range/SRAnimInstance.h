@@ -12,6 +12,7 @@ public:
 	USRAnimInstance();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	
+	bool GetbZoomIn() { return bZoomIn; }
 	bool GetbIsAttacking() { return bIsAttacking; }
 	void SetbIsAttacking(bool boolean);
 
