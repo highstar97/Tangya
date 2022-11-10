@@ -1,10 +1,8 @@
 #include "SRCharacter.h"
 #include "SRPlayerController.h"
 #include "SRAnimInstance.h"
-#include "SRBullet.h"
-#include "Bullet762x39.h"
-#include "SREmptyBullet.h"
-#include "EmptyBullet762x39.h"
+#include "SRWeapon.h"
+#include "KA47_X.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
@@ -52,38 +50,10 @@ ASRCharacter::ASRCharacter()
 	}
 
 	SetControlMode(EControlView::ThirdPersonView);
-
-	// Equipt Weapon
-	FName WeaponSocket(TEXT("hand_rSocket"));
-	if (GetMesh()->DoesSocketExist(WeaponSocket))
-	{
-		Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WEAPON"));
-		static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_WEAPON(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/Ka47/SK_KA47_X.SK_KA47_X"));
-		if (SK_WEAPON.Succeeded())
-		{
-			Weapon->SetSkeletalMesh(SK_WEAPON.Object);
-		}
-		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
-	}
+	Weapon = CreateDefaultSubobject<ASRWeapon>(TEXT("WEAPON"));
+	ADSCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ADSCAMERA"));
 
 	AimingAngle = 0.0f;
-	
-	// attach ADSCamera to weapon
-	FName ADSCameraSocket(TEXT("ADS_Socket"));
-	if (Weapon->DoesSocketExist(ADSCameraSocket))
-	{
-		ADSCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ADSCAMERA"));
-		
-		ADSCamera->SetupAttachment(Weapon, ADSCameraSocket);
-		ADSCamera->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 0.0f), FRotator(90.0f, 90.0f, 0.0f));
-	}
-
-	// Sound
-	static ConstructorHelpers::FObjectFinder<USoundWave> ATTACKSOUND(TEXT("/Game/Indoor_Shooting_Range/Map/FirstPerson/Audio/FirstPersonTemplateWeaponFire02.FirstPersonTemplateWeaponFire02"));
-	if (ATTACKSOUND.Succeeded())
-	{
-		AttackSound = ATTACKSOUND.Object;
-	}
 }
 
 void ASRCharacter::BeginPlay()
@@ -103,7 +73,8 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ASRCharacter::Fire);
 	PlayerInputComponent->BindAction(TEXT("Click Up"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickUp);
 	PlayerInputComponent->BindAction(TEXT("Click Down"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickDown);
-	
+	PlayerInputComponent->BindAction(TEXT("Equip"), EInputEvent::IE_Pressed, this, &ASRCharacter::EquipWeapon);
+
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ASRCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ASRCharacter::MoveRight);
 	
@@ -276,13 +247,19 @@ void ASRCharacter::ZoomIn()
 		SRAnim->ChangebZoomIn();
 		if (SRAnim->GetbZoomIn())
 		{
-			Camera->Deactivate();
-			ADSCamera->Activate();
+			if (Camera && ADSCamera)
+			{
+				Camera->Deactivate();
+				ADSCamera->Activate();
+			}
 		}
 		else
 		{
-			Camera->Activate();
-			ADSCamera->Deactivate();
+			if (Camera && ADSCamera)
+			{
+				Camera->Activate();
+				ADSCamera->Deactivate();
+			}
 		}
 	}
 	
@@ -306,6 +283,26 @@ void ASRCharacter::ClickDown()
 	}
 }
 
+void ASRCharacter::EquipWeapon()
+{
+	Weapon = GetWorld()->SpawnActor<ASRWeapon>(AKA47_X::StaticClass());
+
+	FName WeaponSocket(TEXT("hand_rSocket"));
+	if (GetMesh()->DoesSocketExist(WeaponSocket))
+	{
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+	}
+
+	FName ADSCameraSocket(TEXT("ADS_Socket"));
+	if (Weapon->GetMesh()->DoesSocketExist(ADSCameraSocket))
+	{
+		ADSCamera->AttachToComponent(Weapon->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ADSCameraSocket);
+		ADSCamera->SetRelativeRotation(FRotator(90.0f, 0.0f, -90.0f));
+		ADSCamera->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
+	}
+
+}
+
 // Shoot Bullet on 70cm forward from Camera Location
 void ASRCharacter::Fire()
 {
@@ -317,6 +314,10 @@ void ASRCharacter::Fire()
 	if (SRAnim->GetbCrouching())
 	{
 		//UE_LOG(LogAnimation, Warning, TEXT("Can't Fire Bullet on Crouching State!"));
+		return;
+	}
+	if (nullptr == Weapon)
+	{
 		return;
 	}
 	if (!SRAnim->GetbIsAttacking())
@@ -345,35 +346,22 @@ void ASRCharacter::Fire()
 			MuzzleRotation = CameraRotation;
 		}
 		FName ShellEjectSocket(TEXT("ShellEject"));
-		FVector ShellEjectLocation = Weapon->GetSocketLocation(ShellEjectSocket);
+		FVector ShellEjectLocation = Weapon->GetMesh()->GetSocketLocation(ShellEjectSocket);
 		FRotator ShellEjectRotation = CameraRotation;
 
 		UWorld* World = GetWorld();
 		if (World)
 		{
-			// Bullet
-			MuzzleRotation.Pitch += AimingAngle;
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
-			ABullet762x39* Bullet = World->SpawnActor<ABullet762x39>(ABullet762x39::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
-			Bullet->SetActorScale3D(FVector(5.0f, 5.0f, 5.0f));
-			if (Bullet)
-			{
-				FVector LaunchDirection = MuzzleRotation.Vector();
-				Bullet->FireInDirection(LaunchDirection);
-			}
+		
+			MuzzleRotation.Pitch += AimingAngle;
+			ASRBullet* Bullet = Weapon->ShootBullet(World, MuzzleLocation, MuzzleRotation, SpawnParams);
 
-			// EmptyBullet
-			AEmptyBullet762x39* EmptyBullet = World->SpawnActor<AEmptyBullet762x39>(AEmptyBullet762x39::StaticClass(), ShellEjectLocation, ShellEjectRotation, SpawnParams);
-			//EmptyBullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
-			if (EmptyBullet)
-			{
-				FVector LaunchDirection = ShellEjectRotation.Vector();
-				EmptyBullet->BounceOff(LaunchDirection);
-			}
+			ASREmptyBullet* EmptyBullet = Weapon->ShootEmptyBullet(World, MuzzleLocation, MuzzleRotation, SpawnParams);
 		}
 
-		UGameplayStatics::PlaySound2D(World, AttackSound);
+		UGameplayStatics::PlaySound2D(World, Weapon->GetAttackSound());
 
 		SRAnim->PlayAttackMontage();
 		SRPlayerController->SubtractCurrentBullet();

@@ -6,6 +6,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class USRAnimInstance;
+class ASRWeapon;
 
 enum class EControlView
 {
@@ -52,6 +53,8 @@ private:
 	void ClickUp();
 	void ClickDown();
 
+	void EquipWeapon();
+
 	void Fire();
 
 	UFUNCTION()
@@ -64,7 +67,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* Camera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	UCameraComponent* ADSCamera;
 
 	EControlView CurrentControlView = EControlView::ThirdPersonView;
@@ -73,10 +76,7 @@ public:
 	USRAnimInstance* SRAnim;
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	USkeletalMeshComponent* Weapon;
-
-	UPROPERTY(VisibleAnywhere, Category = Sound)
-	USoundWave* AttackSound;
+	ASRWeapon* Weapon;
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	int32 AimingAngle;
