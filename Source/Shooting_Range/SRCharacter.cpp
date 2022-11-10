@@ -4,6 +4,7 @@
 #include "SRWeapon.h"
 #include "KA47_X.h"
 #include "AR4_X.h"
+#include "KA74U_X.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
@@ -307,6 +308,12 @@ void ASRCharacter::EquipWeapon()
 	}
 	case(3):
 	{
+		SRAnim->SetbIsEquiping(true);
+		Weapon = GetWorld()->SpawnActor<ASRWeapon>(AKA74U_X::StaticClass());
+		break;
+	}
+	case(4):
+	{
 		SRAnim->SetbIsEquiping(false);
 		num = 0;
 		return;
@@ -325,7 +332,7 @@ void ASRCharacter::EquipWeapon()
 		ADSCamera->AttachToComponent(Weapon->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ADSCameraSocket);
 		ADSCamera->SetRelativeRotation(FRotator(90.0f, 0.0f, -90.0f));
 		ADSCamera->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
-	}
+	}	
 }
 
 void ASRCharacter::Fire()
