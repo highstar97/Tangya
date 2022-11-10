@@ -41,6 +41,8 @@ private:
 	void MoveRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void TurnRight(float NewAxisValue);
+	void StopAnim();
+	void UnStopAnim();
 
 	void ChangeControlView();
 	void SetControlMode(EControlView NewControlView);

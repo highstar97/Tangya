@@ -103,7 +103,9 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ASRCharacter::Fire);
 	PlayerInputComponent->BindAction(TEXT("Click Up"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickUp);
 	PlayerInputComponent->BindAction(TEXT("Click Down"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickDown);
-
+	PlayerInputComponent->BindAction(TEXT("Stop"), EInputEvent::IE_Pressed, this, &ASRCharacter::StopAnim);
+	PlayerInputComponent->BindAction(TEXT("Stop"), EInputEvent::IE_Released, this, &ASRCharacter::UnStopAnim);
+	
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ASRCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ASRCharacter::MoveRight);
 	
@@ -186,6 +188,22 @@ void ASRCharacter::TurnRight(float NewAxisValue)
 	{
 		APlayerController* const PlayerController = CastChecked<APlayerController>(Controller);
 		PlayerController->AddYawInput(NewAxisValue);
+	}
+}
+
+void ASRCharacter::StopAnim()
+{
+	if (SRAnim)
+	{
+		SRAnim->SetbStop(true);
+	}
+}
+
+void ASRCharacter::UnStopAnim()
+{
+	if (SRAnim)
+	{
+		SRAnim->SetbStop(false);
 	}
 }
 
@@ -321,13 +339,36 @@ void ASRCharacter::Fire()
 	}
 	if (!SRAnim->GetbIsAttacking())
 	{
-		SRAnim->SetbIsAttacking(true);
-		FVector CameraLocation = GetActorLocation() + SpringArm->GetRelativeLocation() + Camera->GetRelativeLocation();
-		FRotator CameraRotation = GetViewRotation();
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		FVector MuzzleLocation;
+		FRotator MuzzleRotation;
 
-		FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
-		FRotator MuzzleRotation = CameraRotation;
+		if (!SRAnim->GetbZoomIn())
+		{
+			SRAnim->SetbIsAttacking(true);
+			CameraLocation = GetActorLocation() + SpringArm->GetRelativeLocation() + Camera->GetRelativeLocation();
+			CameraRotation = GetViewRotation();
 
+			MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
+			MuzzleRotation = CameraRotation;
+		}
+		else
+		{
+			SRAnim->SetbIsAttacking(true);
+			CameraLocation = ADSCamera->GetComponentLocation();
+			CameraRotation = GetViewRotation();
+			//CameraRotation = GetActorRotation();
+			UE_LOG(LogTemp, Warning, TEXT("CameraRo %f %f %f"), CameraRotation.Roll, CameraRotation.Pitch, CameraRotation.Yaw);
+			UE_LOG(LogTemp, Warning, TEXT("ActorRo %f %f %f"), GetActorRotation().Roll, GetActorRotation().Pitch, GetActorRotation().Yaw);
+
+			MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
+			MuzzleRotation = CameraRotation;
+			//MuzzleRotation = GetActorRotation();
+			UE_LOG(LogTemp, Warning, TEXT("Camera %f %f %f"), CameraLocation.X, CameraLocation.Y, CameraLocation.Z);
+			UE_LOG(LogTemp, Warning, TEXT("Muzzle %f %f %f"), MuzzleLocation.X, MuzzleLocation.Y, MuzzleLocation.Z);
+			
+		}
 		FName ShellEjectSocket(TEXT("ShellEject"));
 		FVector ShellEjectLocation = Weapon->GetSocketLocation(ShellEjectSocket);
 		FRotator ShellEjectRotation = CameraRotation;
@@ -340,7 +381,7 @@ void ASRCharacter::Fire()
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
 			ABullet762x39* Bullet = World->SpawnActor<ABullet762x39>(ABullet762x39::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
-			//Bullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
+			Bullet->SetActorScale3D(FVector(5.0f, 5.0f, 5.0f));
 			if (Bullet)
 			{
 				FVector LaunchDirection = MuzzleRotation.Vector();

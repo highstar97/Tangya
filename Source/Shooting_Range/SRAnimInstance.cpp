@@ -47,7 +47,6 @@ void USRAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		{
 			LeftRight = EulerVector.Z >= LastRotationYaw - 180.0f ? EulerVector.Z - LastRotationYaw : EulerVector.Z - EulerVector.Z + 360.0f;
 		}
-		UE_LOG(LogTemp, Log, TEXT("%f, %f, %f"), EulerVector.Z, LastRotationYaw, LeftRight);
 	}
 }
 
@@ -64,6 +63,11 @@ void USRAnimInstance::SetbCanJump(bool boolean)
 void USRAnimInstance::SetbCrouching(bool boolean)
 {
 	bCrouching = boolean;
+}
+
+void USRAnimInstance::SetbStop(bool boolean)
+{
+	bStop = boolean;
 }
 
 void USRAnimInstance::ChangebZoomIn()

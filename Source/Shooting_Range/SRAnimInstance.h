@@ -22,6 +22,9 @@ public:
 	bool GetbCrouching() { return bCrouching; }
 	void SetbCrouching(bool boolean);
 
+	bool GetbStop() { return bStop; }
+	void SetbStop(bool boolean);
+
 	void ChangebZoomIn();
 
 	void PlayAttackMontage();
@@ -38,6 +41,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	bool bCrouching;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
+	bool bStop;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	float Speed;
@@ -59,4 +65,6 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* Ironsight_AttackMontage;
+
+
 };
