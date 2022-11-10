@@ -3,6 +3,7 @@
 #include "SRAnimInstance.h"
 #include "SRWeapon.h"
 #include "KA47_X.h"
+#include "AR4_X.h"
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
@@ -54,6 +55,8 @@ ASRCharacter::ASRCharacter()
 	ADSCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ADSCAMERA"));
 
 	AimingAngle = 0.0f;
+
+	num = 0;
 }
 
 void ASRCharacter::BeginPlay()
@@ -287,9 +290,29 @@ void ASRCharacter::ClickDown()
 
 void ASRCharacter::EquipWeapon()
 {
-	SRAnim->SetbIsEquiping(true);
-	Weapon = GetWorld()->SpawnActor<ASRWeapon>(AKA47_X::StaticClass());
-
+	GetWorld()->DestroyActor(Weapon);
+	switch (++num)
+	{
+	case(1):
+	{
+		SRAnim->SetbIsEquiping(true);
+		Weapon = GetWorld()->SpawnActor<ASRWeapon>(AKA47_X::StaticClass());
+		break;
+	}
+	case(2):
+	{
+		SRAnim->SetbIsEquiping(true);
+		Weapon = GetWorld()->SpawnActor<ASRWeapon>(AAR4_X::StaticClass());
+		break;
+	}
+	case(3):
+	{
+		SRAnim->SetbIsEquiping(false);
+		num = 0;
+		return;
+	}
+	}
+	
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	if (GetMesh()->DoesSocketExist(WeaponSocket))
 	{
@@ -354,7 +377,7 @@ void ASRCharacter::Fire()
 			MuzzleRotation.Pitch += AimingAngle;
 			ASRBullet* Bullet = Weapon->ShootBullet(World, MuzzleLocation, MuzzleRotation, SpawnParams);
 
-			ASREmptyBullet* EmptyBullet = Weapon->ShootEmptyBullet(World, MuzzleLocation, MuzzleRotation, SpawnParams);
+			ASREmptyBullet* EmptyBullet = Weapon->ShootEmptyBullet(World, ShellEjectLocation, ShellEjectRotation, SpawnParams);
 		}
 
 		UGameplayStatics::PlaySound2D(World, Weapon->GetAttackSound());

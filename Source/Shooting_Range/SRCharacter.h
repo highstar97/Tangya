@@ -80,4 +80,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	int32 AimingAngle;
+
+	int32 num;
 };

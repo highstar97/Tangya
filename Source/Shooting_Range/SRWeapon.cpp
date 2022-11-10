@@ -27,7 +27,7 @@ ASRBullet* ASRWeapon::ShootBullet(UWorld* World, FVector MuzzleLocation, FRotato
 		Bullet = World->SpawnActor<ASRBullet>(ASRBullet::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
 		if (Bullet)
 		{
-			// Bullet->SetActorScale3D(FVector(5.0f, 5.0f, 5.0f));
+			//Bullet->SetActorScale3D(FVector(5.0f, 5.0f, 5.0f));
 			FVector LaunchDirection = MuzzleRotation.Vector();
 			Bullet->FireInDirection(LaunchDirection);
 		}
