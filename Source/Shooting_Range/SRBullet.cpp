@@ -1,4 +1,5 @@
 #include "SRBullet.h"
+#include "Kismet/GameplayStatics.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 ASRBullet::ASRBullet()
@@ -23,6 +24,11 @@ void ASRBullet::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ASRBullet::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
 }
 
 void ASRBullet::FireInDirection(const FVector& ShootDirection)

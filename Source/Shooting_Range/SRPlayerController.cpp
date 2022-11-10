@@ -3,6 +3,8 @@
 #include "SRPlayerState.h"
 #include "HUDWidget.h"
 #include "SRGamePlayWidget.h"
+#include "SRCheckRankWidget.h"
+#include "SRRankingWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
 
@@ -13,17 +15,29 @@ ASRPlayerController::ASRPlayerController()
 	{
 		HUDWidgetClass = UI_HUD_C.Class;
 	}
+	
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUDDY_C(TEXT("/Game/Blueprints/Huddy_BP.Huddy_BP_C"));
+	if (UI_HUDDY_C.Succeeded())
+	{
+		HuddyWidgetClass = UI_HUDDY_C.Class;
+	}
 
 	static ConstructorHelpers::FClassFinder<USRGamePlayWidget> UI_PAUSE_C(TEXT("/Game/UI/UI_Pause.UI_Pause_C"));
 	if (UI_PAUSE_C.Succeeded())
 	{
 		MenuWidgetClass = UI_PAUSE_C.Class;
 	}
-
-	static ConstructorHelpers::FClassFinder<UUserWidget> UI_HUDDY_C(TEXT("/Game/Blueprints/Huddy_BP.Huddy_BP_C"));
-	if (UI_HUDDY_C.Succeeded())
+	
+	static ConstructorHelpers::FClassFinder<USRCheckRankWidget> UI_CHECKRANK_C(TEXT("/Game/UI/UI_CheckRank.UI_CheckRank_C"));
+	if (UI_CHECKRANK_C.Succeeded())
 	{
-		HuddyWidgetClass = UI_HUDDY_C.Class;
+		CheckRankWidgetClass = UI_CHECKRANK_C.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<USRRankingWidget> UI_RANKING_C(TEXT("/Game/UI/UI_RANKING.UI_RANKING_C"));
+	if (UI_RANKING_C.Succeeded())
+	{
+		RankingWidgetClass = UI_RANKING_C.Class;
 	}
 }
 
@@ -67,7 +81,6 @@ void ASRPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FInputModeGameOnly InputMode;
 	ChangeInputMode(true);
 
 	PlayerCameraManager->ViewPitchMin = -45.0f;
@@ -82,6 +95,7 @@ void ASRPlayerController::BeginPlay()
 	SRPlayerState = Cast<ASRPlayerState>(PlayerState);
 	if (nullptr != SRPlayerState)
 	{
+		SRPlayerState->BindPlayerController(this);
 		HUDWidget->BindPlayerState(SRPlayerState);
 		SRPlayerState->SetTotalBullets(Cast<AShooting_RangeGameModeBase>(GetWorld()->GetAuthGameMode())->GetTotalBullets());
 		SRPlayerState->SetCurrentBullets(SRPlayerState->GetTotalBullets());
@@ -100,6 +114,28 @@ void ASRPlayerController::OnGamePause()
 	MenuWidget = CreateWidget<USRGamePlayWidget>(this, MenuWidgetClass);
 	ensure(nullptr != MenuWidget);
 	MenuWidget->AddToViewport(3);
+
+	SetPause(true);
+	ChangeInputMode(false);
+}
+
+void ASRPlayerController::OnGameEnd()
+{
+	CheckRankWidget = CreateWidget<USRCheckRankWidget>(this, CheckRankWidgetClass);
+	ensure(nullptr != CheckRankWidget);
+	CheckRankWidget->AddToViewport();
+	CheckRankWidget->UpdateWidget();
+
+	SetPause(true);
+	ChangeInputMode(false);
+}
+
+void ASRPlayerController::ShowRankingWidget()
+{
+	RankingWidget = CreateWidget<USRRankingWidget>(this, RankingWidgetClass);
+	ensure(nullptr != RankingWidget);
+	RankingWidget->AddToViewport();
+	RankingWidget->UpdateWidget();
 
 	SetPause(true);
 	ChangeInputMode(false);

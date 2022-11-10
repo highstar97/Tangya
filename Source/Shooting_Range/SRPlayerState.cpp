@@ -1,4 +1,5 @@
 #include "SRPlayerState.h"
+#include "Shooting_RangeGameModeBase.h"
 
 ASRPlayerState::ASRPlayerState()
 {
@@ -20,8 +21,8 @@ void ASRPlayerState::SetCurrentBullets(int32 NumOfBullets)
 
 	if (NumOfBullets == 0)
 	{
-		// 게임모드 -> 게임 종료
-		UE_LOG(LogTemp, Error, TEXT("Game End"));
+		auto GameMode = Cast<AShooting_RangeGameModeBase>(GetWorld()->GetAuthGameMode());
+		GameMode->NumOfBulletIsZero(PlayerController);		
 	}
 }
 
