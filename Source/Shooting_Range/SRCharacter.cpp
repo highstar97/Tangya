@@ -245,46 +245,49 @@ void ASRCharacter::ZoomIn()
 	if (nullptr != SRAnim)
 	{
 		SRAnim->ChangebZoomIn();
-		if (SRAnim->GetbZoomIn())
+		if (SRAnim->GetbIsEquiping())
 		{
-			if (Camera && ADSCamera)
+			if (SRAnim->GetbZoomIn())
 			{
 				Camera->Deactivate();
 				ADSCamera->Activate();
 			}
-		}
-		else
-		{
-			if (Camera && ADSCamera)
+			else
 			{
 				Camera->Activate();
 				ADSCamera->Deactivate();
 			}
 		}
 	}
-	
 }
 
 void ASRCharacter::ClickUp()
 {
-	if (0 <= AimingAngle && AimingAngle < 45)
+	if (SRAnim->GetbIsEquiping())
 	{
-		AimingAngle += 1;
-		UE_LOG(LogTemp, Warning, TEXT("1 Click Up, Now : %d"), AimingAngle);
+		if (0 <= AimingAngle && AimingAngle < 45)
+		{
+			AimingAngle += 1;
+			UE_LOG(LogTemp, Warning, TEXT("1 Click Up, Now : %d"), AimingAngle);
+		}
 	}
 }
 
 void ASRCharacter::ClickDown()
 {
-	if (0 < AimingAngle && AimingAngle <= 45)
+	if (SRAnim->GetbIsEquiping())
 	{
-		AimingAngle -= 1;
-		UE_LOG(LogTemp, Warning, TEXT("1 Click Down, Now : %d"), AimingAngle);
+		if (0 < AimingAngle && AimingAngle <= 45)
+		{
+			AimingAngle -= 1;
+			UE_LOG(LogTemp, Warning, TEXT("1 Click Down, Now : %d"), AimingAngle);
+		}
 	}
 }
 
 void ASRCharacter::EquipWeapon()
 {
+	SRAnim->SetbIsEquiping(true);
 	Weapon = GetWorld()->SpawnActor<ASRWeapon>(AKA47_X::StaticClass());
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
@@ -300,10 +303,8 @@ void ASRCharacter::EquipWeapon()
 		ADSCamera->SetRelativeRotation(FRotator(90.0f, 0.0f, -90.0f));
 		ADSCamera->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
 	}
-
 }
 
-// Shoot Bullet on 70cm forward from Camera Location
 void ASRCharacter::Fire()
 {
 	ASRPlayerController* SRPlayerController = Cast<ASRPlayerController>(GetController());
@@ -311,12 +312,7 @@ void ASRCharacter::Fire()
 	{
 		return;
 	}
-	if (SRAnim->GetbCrouching())
-	{
-		//UE_LOG(LogAnimation, Warning, TEXT("Can't Fire Bullet on Crouching State!"));
-		return;
-	}
-	if (nullptr == Weapon)
+	if (SRAnim->GetbCrouching() || !SRAnim->GetbIsEquiping())
 	{
 		return;
 	}

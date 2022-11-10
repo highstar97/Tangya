@@ -22,6 +22,9 @@ public:
 	bool GetbCrouching() { return bCrouching; }
 	void SetbCrouching(bool boolean);
 
+	bool GetbIsEquiping() { return bIsEquiping; }
+	void SetbIsEquiping(bool boolean);
+
 	void ChangebZoomIn();
 
 	void PlayAttackMontage();
@@ -38,6 +41,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	bool bCrouching;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
+	bool bIsEquiping;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	float Speed;
