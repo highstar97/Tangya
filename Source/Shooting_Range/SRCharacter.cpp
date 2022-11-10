@@ -357,17 +357,10 @@ void ASRCharacter::Fire()
 		{
 			SRAnim->SetbIsAttacking(true);
 			CameraLocation = ADSCamera->GetComponentLocation();
-			CameraRotation = GetViewRotation();
-			//CameraRotation = GetActorRotation();
-			UE_LOG(LogTemp, Warning, TEXT("CameraRo %f %f %f"), CameraRotation.Roll, CameraRotation.Pitch, CameraRotation.Yaw);
-			UE_LOG(LogTemp, Warning, TEXT("ActorRo %f %f %f"), GetActorRotation().Roll, GetActorRotation().Pitch, GetActorRotation().Yaw);
+			CameraRotation = ADSCamera->GetComponentRotation();
 
 			MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
 			MuzzleRotation = CameraRotation;
-			//MuzzleRotation = GetActorRotation();
-			UE_LOG(LogTemp, Warning, TEXT("Camera %f %f %f"), CameraLocation.X, CameraLocation.Y, CameraLocation.Z);
-			UE_LOG(LogTemp, Warning, TEXT("Muzzle %f %f %f"), MuzzleLocation.X, MuzzleLocation.Y, MuzzleLocation.Z);
-			
 		}
 		FName ShellEjectSocket(TEXT("ShellEject"));
 		FVector ShellEjectLocation = Weapon->GetSocketLocation(ShellEjectSocket);
