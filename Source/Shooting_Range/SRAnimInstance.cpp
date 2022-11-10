@@ -65,11 +65,6 @@ void USRAnimInstance::SetbCrouching(bool boolean)
 	bCrouching = boolean;
 }
 
-void USRAnimInstance::SetbStop(bool boolean)
-{
-	bStop = boolean;
-}
-
 void USRAnimInstance::ChangebZoomIn()
 {
 	bZoomIn = !bZoomIn;

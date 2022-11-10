@@ -103,8 +103,6 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ASRCharacter::Fire);
 	PlayerInputComponent->BindAction(TEXT("Click Up"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickUp);
 	PlayerInputComponent->BindAction(TEXT("Click Down"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickDown);
-	PlayerInputComponent->BindAction(TEXT("Stop"), EInputEvent::IE_Pressed, this, &ASRCharacter::StopAnim);
-	PlayerInputComponent->BindAction(TEXT("Stop"), EInputEvent::IE_Released, this, &ASRCharacter::UnStopAnim);
 	
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ASRCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ASRCharacter::MoveRight);
@@ -188,22 +186,6 @@ void ASRCharacter::TurnRight(float NewAxisValue)
 	{
 		APlayerController* const PlayerController = CastChecked<APlayerController>(Controller);
 		PlayerController->AddYawInput(NewAxisValue);
-	}
-}
-
-void ASRCharacter::StopAnim()
-{
-	if (SRAnim)
-	{
-		SRAnim->SetbStop(true);
-	}
-}
-
-void ASRCharacter::UnStopAnim()
-{
-	if (SRAnim)
-	{
-		SRAnim->SetbStop(false);
 	}
 }
 
