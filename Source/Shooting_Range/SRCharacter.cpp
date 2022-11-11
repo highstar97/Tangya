@@ -345,7 +345,7 @@ void ASRCharacter::Fire()
 		{
 			SRAnim->SetbIsAttacking(true);
 			CameraLocation = GetActorLocation() + SpringArm->GetRelativeLocation() + Camera->GetRelativeLocation();
-			CameraRotation = GetViewRotation();
+			CameraRotation = Camera->GetComponentRotation();
 
 			FireLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
 			FireRotation = CameraRotation;
@@ -376,14 +376,15 @@ void ASRCharacter::Fire()
 		}
 
 		FName MuzzleSocket(TEXT("Muzzle"));
-		FVector MuzzleLocation = Weapon->GetMesh()->GetSocketLocation(MuzzleSocket);
-		FRotator MuzzleRotation = CameraRotation;
-
 		UGameplayStatics::SpawnEmitterAttached(Weapon->GetMuzzleParticle(), Weapon->GetMesh(), MuzzleSocket);
+		UGameplayStatics::SpawnEmitterAttached(Weapon->GetBulletTrailParticle(), Weapon->GetMesh(), MuzzleSocket);
 
 		UGameplayStatics::PlaySound2D(World, Weapon->GetAttackSound());
 
+		FRotator BaseRoatoion = GetViewRotation();
+		GetMesh()->SetRelativeRotation(CameraRotation);
 		SRAnim->PlayAttackMontage();
+		GetMesh()->SetRelativeRotation(BaseRoatoion);
 		SRPlayerController->SubtractCurrentBullet();
 	}
 }

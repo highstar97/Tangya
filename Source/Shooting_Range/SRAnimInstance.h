@@ -65,6 +65,4 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* Ironsight_AttackMontage;
-
-
 };

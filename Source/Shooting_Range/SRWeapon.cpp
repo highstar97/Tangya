@@ -16,10 +16,16 @@ ASRWeapon::ASRWeapon()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
 	SetRootComponent(Mesh);
 
-	static ConstructorHelpers::FObjectFinder<UParticleSystem> MUZZLEPARTICLE(TEXT("/Game/Particles/P_MuzzleFlash.P_MuzzleFlash"));
-	if (MUZZLEPARTICLE.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> P_MUZZLE(TEXT("/Game/Particles/P_MuzzleFlash.P_MuzzleFlash"));
+	if (P_MUZZLE.Succeeded())
 	{
-		MuzzleParticle = MUZZLEPARTICLE.Object;
+		MuzzleParticle = P_MUZZLE.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> P_BULLETTRAIL(TEXT("/Game/Particles/P_Bullet_Trail.P_Bullet_Trail"));
+	if (P_BULLETTRAIL.Succeeded())
+	{
+		BulletTrailParticle = P_BULLETTRAIL.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<USoundWave> ATTACKSOUND(TEXT("/Game/Indoor_Shooting_Range/Map/FirstPerson/Audio/FirstPersonTemplateWeaponFire02.FirstPersonTemplateWeaponFire02"));

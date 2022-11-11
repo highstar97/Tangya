@@ -20,6 +20,7 @@ public:
 	virtual FString GetAbility() { return Ability; }
 	virtual USkeletalMeshComponent* GetMesh() { return Mesh; }
 	virtual UParticleSystem* GetMuzzleParticle() { return MuzzleParticle; }
+	UParticleSystem* GetBulletTrailParticle() { return BulletTrailParticle; }
 	virtual USoundWave* GetAttackSound() { return AttackSound; }
 
 	virtual ASRBullet* ShootBullet(UWorld* World, FVector MuzzleLocation, FRotator MuzzleRotation, FActorSpawnParameters SpawnParams);
@@ -47,6 +48,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Particle)
 	UParticleSystem* MuzzleParticle;
+
+	UPROPERTY(VisibleAnywhere, Category = Particle)
+	UParticleSystem* BulletTrailParticle;
 
 	UPROPERTY(VisibleAnywhere, Category = Sound)
 	USoundWave* AttackSound;
