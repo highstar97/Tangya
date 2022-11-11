@@ -338,8 +338,8 @@ void ASRCharacter::Fire()
 	{
 		FVector CameraLocation;
 		FRotator CameraRotation;
-		FVector MuzzleLocation;
-		FRotator MuzzleRotation;
+		FVector FireLocation;
+		FRotator FireRotation;
 
 		if (!SRAnim->GetbZoomIn())
 		{
@@ -347,8 +347,8 @@ void ASRCharacter::Fire()
 			CameraLocation = GetActorLocation() + SpringArm->GetRelativeLocation() + Camera->GetRelativeLocation();
 			CameraRotation = GetViewRotation();
 
-			MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
-			MuzzleRotation = CameraRotation;
+			FireLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
+			FireRotation = CameraRotation;
 		}
 		else
 		{
@@ -356,8 +356,8 @@ void ASRCharacter::Fire()
 			CameraLocation = ADSCamera->GetComponentLocation();
 			CameraRotation = ADSCamera->GetComponentRotation();
 
-			MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
-			MuzzleRotation = CameraRotation;
+			FireLocation = CameraLocation + FTransform(CameraRotation).TransformVector(FVector(70.0f, 0.0f, 0.0f));
+			FireRotation = CameraRotation;
 		}
 		FName ShellEjectSocket(TEXT("ShellEject"));
 		FVector ShellEjectLocation = Weapon->GetMesh()->GetSocketLocation(ShellEjectSocket);
@@ -369,11 +369,17 @@ void ASRCharacter::Fire()
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
 		
-			MuzzleRotation.Pitch += AimingAngle;
-			ASRBullet* Bullet = Weapon->ShootBullet(World, MuzzleLocation, MuzzleRotation, SpawnParams);
+			FireRotation.Pitch += AimingAngle;
+			ASRBullet* Bullet = Weapon->ShootBullet(World, FireLocation, FireRotation, SpawnParams);
 
 			ASREmptyBullet* EmptyBullet = Weapon->ShootEmptyBullet(World, ShellEjectLocation, ShellEjectRotation, SpawnParams);
 		}
+
+		FName MuzzleSocket(TEXT("Muzzle"));
+		FVector MuzzleLocation = Weapon->GetMesh()->GetSocketLocation(MuzzleSocket);
+		FRotator MuzzleRotation = CameraRotation;
+
+		UGameplayStatics::SpawnEmitterAttached(Weapon->GetMuzzleParticle(), Weapon->GetMesh(), MuzzleSocket);
 
 		UGameplayStatics::PlaySound2D(World, Weapon->GetAttackSound());
 

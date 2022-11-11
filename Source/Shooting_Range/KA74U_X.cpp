@@ -49,6 +49,12 @@ USkeletalMeshComponent* AKA74U_X::GetMesh()
 	return Mesh;
 }
 
+UParticleSystem* AKA74U_X::GetMuzzleParticle()
+{
+	Super::GetMuzzleParticle();
+	return MuzzleParticle;
+}
+
 USoundWave* AKA74U_X::GetAttackSound()
 {
 	Super::GetAttackSound();

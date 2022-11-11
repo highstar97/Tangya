@@ -49,6 +49,12 @@ USkeletalMeshComponent* AAR4_X::GetMesh()
 	return Mesh;
 }
 
+UParticleSystem* AAR4_X::GetMuzzleParticle()
+{
+	Super::GetMuzzleParticle();
+	return MuzzleParticle;
+}
+
 USoundWave* AAR4_X::GetAttackSound()
 {
 	Super::GetAttackSound();

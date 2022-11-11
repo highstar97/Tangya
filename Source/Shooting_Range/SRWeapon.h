@@ -5,6 +5,7 @@
 
 class ASRBullet;
 class ASREmptyBullet;
+class UParticleSystem;
 
 UCLASS()
 class SHOOTING_RANGE_API ASRWeapon : public AActor
@@ -18,6 +19,7 @@ public:
 	virtual FString GetName() { return Name; }
 	virtual FString GetAbility() { return Ability; }
 	virtual USkeletalMeshComponent* GetMesh() { return Mesh; }
+	virtual UParticleSystem* GetMuzzleParticle() { return MuzzleParticle; }
 	virtual USoundWave* GetAttackSound() { return AttackSound; }
 
 	virtual ASRBullet* ShootBullet(UWorld* World, FVector MuzzleLocation, FRotator MuzzleRotation, FActorSpawnParameters SpawnParams);
@@ -42,6 +44,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* Mesh;
+
+	UPROPERTY(VisibleAnywhere, Category = Particle)
+	UParticleSystem* MuzzleParticle;
 
 	UPROPERTY(VisibleAnywhere, Category = Sound)
 	USoundWave* AttackSound;

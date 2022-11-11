@@ -1,6 +1,7 @@
 #include "SRWeapon.h"
 #include "SRBullet.h"
 #include "SREmptyBullet.h"
+#include "Particles/ParticleSystem.h"
 
 ASRWeapon::ASRWeapon()
 {
@@ -15,7 +16,12 @@ ASRWeapon::ASRWeapon()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
 	SetRootComponent(Mesh);
 
-	// Sound
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> MUZZLEPARTICLE(TEXT("/Game/Particles/P_MuzzleFlash.P_MuzzleFlash"));
+	if (MUZZLEPARTICLE.Succeeded())
+	{
+		MuzzleParticle = MUZZLEPARTICLE.Object;
+	}
+
 	static ConstructorHelpers::FObjectFinder<USoundWave> ATTACKSOUND(TEXT("/Game/Indoor_Shooting_Range/Map/FirstPerson/Audio/FirstPersonTemplateWeaponFire02.FirstPersonTemplateWeaponFire02"));
 	if (ATTACKSOUND.Succeeded())
 	{
