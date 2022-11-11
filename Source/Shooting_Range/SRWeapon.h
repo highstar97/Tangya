@@ -14,6 +14,9 @@ class SHOOTING_RANGE_API ASRWeapon : public AActor
 public:	
 	ASRWeapon();
 
+	virtual UTexture2D* GetImage() { return Image; }
+	virtual FString GetName() { return Name; }
+	virtual FString GetAbility() { return Ability; }
 	virtual USkeletalMeshComponent* GetMesh() { return Mesh; }
 	virtual USoundWave* GetAttackSound() { return AttackSound; }
 
@@ -23,10 +26,20 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+public:
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	TSubclassOf<ASRWeapon> WeaponClass;
 
 protected:
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UTexture2D* Image;
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	FString Name;
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	FString Ability;
+
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	USkeletalMeshComponent* Mesh;
 

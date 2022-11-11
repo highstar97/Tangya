@@ -11,6 +11,9 @@ class SHOOTING_RANGE_API AKA74U_X : public ASRWeapon
 public:
 	AKA74U_X();
 
+	virtual UTexture2D* GetImage() override;
+	virtual FString GetName() override;
+	virtual FString GetAbility() override;
 	virtual USkeletalMeshComponent* GetMesh() override;
 	virtual USoundWave* GetAttackSound() override;
 

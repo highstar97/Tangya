@@ -55,7 +55,7 @@ void USRCheckRankWidget::PressedYes()
 	}
 
 	RemoveFromParent();
-	OwningPlayerController->ShowRankingWidget();
+	OwningPlayerController->TurnOnRankingWidget();
 }
 
 void USRCheckRankWidget::PressedNo()

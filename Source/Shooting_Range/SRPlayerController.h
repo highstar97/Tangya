@@ -7,6 +7,7 @@ class UHUDWidget;
 class USRGamePlayWidget;
 class USRCheckRankWidget;
 class USRRankingWidget;
+class USRSelectWeaponWidget;
 class ASRPlayerState;
 
 UCLASS()
@@ -19,6 +20,8 @@ public:
 	
 	virtual void PostInitializeComponents() override;
 	virtual void OnPossess(APawn* aPawn) override;
+
+	UFUNCTION(BlueprintCallable)
 	void ChangeInputMode(bool bGameMode = true);
 
 	ASRPlayerState* GetPlayerState() { return SRPlayerState; };
@@ -30,7 +33,17 @@ public:
 
 	void OnGameEnd();
 
-	void ShowRankingWidget();
+	void TurnOnHUDWidget();
+	void TurnOffHUDWidget();
+
+	void TurnOnHuddyWidget();
+	void TurnOffHuddyWidget();
+
+	void TurnOnRankingWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void TurnOnSelectWeaponWidget();
+	void TurnOffSelectWeaponWidget();
 
 protected:
 	virtual void BeginPlay() override;
@@ -56,6 +69,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<USRRankingWidget> RankingWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<USRSelectWeaponWidget> SelectWeaponWidgetClass;
+
 private:
 	UPROPERTY()
 	ASRPlayerState* SRPlayerState;
@@ -74,6 +90,9 @@ private:
 
 	UPROPERTY()
 	USRRankingWidget* RankingWidget;
+
+	UPROPERTY()
+	USRSelectWeaponWidget* SelectWeaponWidget;
 
 	FInputModeGameOnly GameInputMode;
 	FInputModeUIOnly UIInputMode;

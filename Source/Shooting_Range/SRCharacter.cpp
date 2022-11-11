@@ -56,8 +56,6 @@ ASRCharacter::ASRCharacter()
 	ADSCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ADSCAMERA"));
 
 	AimingAngle = 0.0f;
-
-	num = 0;
 }
 
 void ASRCharacter::BeginPlay()
@@ -77,7 +75,6 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ASRCharacter::Fire);
 	PlayerInputComponent->BindAction(TEXT("Click Up"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickUp);
 	PlayerInputComponent->BindAction(TEXT("Click Down"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickDown);
-	PlayerInputComponent->BindAction(TEXT("Equip"), EInputEvent::IE_Pressed, this, &ASRCharacter::EquipWeapon);
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ASRCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ASRCharacter::MoveRight);
@@ -289,37 +286,15 @@ void ASRCharacter::ClickDown()
 	}
 }
 
-void ASRCharacter::EquipWeapon()
+void ASRCharacter::EquipWeapon(ASRWeapon* NewWeapon)
 {
-	GetWorld()->DestroyActor(Weapon);
-	switch (++num)
+	if (nullptr == NewWeapon)
 	{
-	case(1):
-	{
-		SRAnim->SetbIsEquiping(true);
-		Weapon = GetWorld()->SpawnActor<ASRWeapon>(AKA47_X::StaticClass());
-		break;
-	}
-	case(2):
-	{
-		SRAnim->SetbIsEquiping(true);
-		Weapon = GetWorld()->SpawnActor<ASRWeapon>(AAR4_X::StaticClass());
-		break;
-	}
-	case(3):
-	{
-		SRAnim->SetbIsEquiping(true);
-		Weapon = GetWorld()->SpawnActor<ASRWeapon>(AKA74U_X::StaticClass());
-		break;
-	}
-	case(4):
-	{
-		SRAnim->SetbIsEquiping(false);
-		num = 0;
 		return;
 	}
-	}
-	
+
+	Weapon = NewWeapon;
+
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	if (GetMesh()->DoesSocketExist(WeaponSocket))
 	{
@@ -332,7 +307,20 @@ void ASRCharacter::EquipWeapon()
 		ADSCamera->AttachToComponent(Weapon->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ADSCameraSocket);
 		ADSCamera->SetRelativeRotation(FRotator(90.0f, 0.0f, -90.0f));
 		ADSCamera->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
-	}	
+	}
+
+	ASRPlayerController* SRPlayerController = Cast<ASRPlayerController>(GetController());
+	if (SRPlayerController)
+	{
+		SRPlayerController->TurnOffSelectWeaponWidget();
+		if (!SRAnim->GetbIsEquiping())
+		{
+			SRPlayerController->TurnOnHUDWidget();
+			SRPlayerController->TurnOnHuddyWidget();
+		}
+	}
+
+	SRAnim->SetbIsEquiping(true);
 }
 
 void ASRCharacter::Fire()

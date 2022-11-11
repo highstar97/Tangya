@@ -38,6 +38,7 @@ public:
 private:
 	void Jump();
 	void Crouch();
+
 	void MoveForward(float NewAxisValue);
 	void MoveRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
@@ -53,7 +54,8 @@ private:
 	void ClickUp();
 	void ClickDown();
 
-	void EquipWeapon();
+	UFUNCTION(BlueprintCallable)
+	void EquipWeapon(ASRWeapon* NewWeapon);
 
 	void Fire();
 
@@ -80,6 +82,4 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	int32 AimingAngle;
-
-	int32 num;
 };

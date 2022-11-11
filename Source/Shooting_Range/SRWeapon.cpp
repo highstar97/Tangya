@@ -4,7 +4,13 @@
 
 ASRWeapon::ASRWeapon()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	WeaponClass = ASRWeapon::StaticClass();
+
+	Image = nullptr;
+	Name = TEXT("Weapon");
+	Ability = TEXT("No Ability");
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MESH"));
 	SetRootComponent(Mesh);
@@ -56,10 +62,4 @@ void ASRWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	
-}
-
-void ASRWeapon::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }

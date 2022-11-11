@@ -4,6 +4,17 @@
 
 AKA74U_X::AKA74U_X()
 {
+	WeaponClass = AKA74U_X::StaticClass();
+
+	static ConstructorHelpers::FObjectFinder<UTexture2D> IMAGE_KA74U_X(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/KA74U/KA47U.KA47U"));
+	if (IMAGE_KA74U_X.Succeeded())
+	{
+		Image = IMAGE_KA74U_X.Object;
+	}
+
+	Name = TEXT("KA47U");
+	Ability = TEXT("Åº¾Ë -3, Á¡¼ö +2");
+
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_WEAPON(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/KA74U/SK_KA74U_X.SK_KA74U_X"));
 	if (SK_WEAPON.Succeeded())
 	{
@@ -12,6 +23,24 @@ AKA74U_X::AKA74U_X()
 
 	Bullet = CreateDefaultSubobject<ABullet762x39>(TEXT("BULLET_7.62"));
 	EmptyBullet = CreateDefaultSubobject<AEmptyBullet762x39>(TEXT("EMPTYBULLET_7.62"));
+}
+
+UTexture2D* AKA74U_X::GetImage()
+{
+	Super::GetImage();
+	return Image;
+}
+
+FString AKA74U_X::GetName()
+{
+	Super::GetName();
+	return Name;
+}
+
+FString AKA74U_X::GetAbility()
+{
+	Super::GetAbility();
+	return Ability;
 }
 
 USkeletalMeshComponent* AKA74U_X::GetMesh()
