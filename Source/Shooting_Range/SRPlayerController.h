@@ -8,6 +8,7 @@ class USRGamePlayWidget;
 class USRCheckRankWidget;
 class USRRankingWidget;
 class USRSelectWeaponWidget;
+class USRSettingWidget;
 class ASRPlayerState;
 
 UCLASS()
@@ -45,6 +46,9 @@ public:
 	void TurnOnSelectWeaponWidget();
 	void TurnOffSelectWeaponWidget();
 
+	UFUNCTION(BlueprintCallable)
+	void TurnOnSettingWidget();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -72,6 +76,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
 	TSubclassOf<USRSelectWeaponWidget> SelectWeaponWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+	TSubclassOf<USRSettingWidget> SettingWidgetClass;
+
 private:
 	UPROPERTY()
 	ASRPlayerState* SRPlayerState;
@@ -93,6 +100,9 @@ private:
 
 	UPROPERTY()
 	USRSelectWeaponWidget* SelectWeaponWidget;
+
+	UPROPERTY()
+	USRSettingWidget* SettingWidget;
 
 	FInputModeGameOnly GameInputMode;
 	FInputModeUIOnly UIInputMode;

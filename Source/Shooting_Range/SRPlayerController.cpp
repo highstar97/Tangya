@@ -1,11 +1,13 @@
 #include "SRPlayerController.h"
 #include "Shooting_RangeGameModeBase.h"
 #include "SRPlayerState.h"
+#include "SRSaveGame.h"
 #include "HUDWidget.h"
 #include "SRGamePlayWidget.h"
 #include "SRCheckRankWidget.h"
 #include "SRRankingWidget.h"
 #include "SRSelectWeaponWidget.h"
+#include "SRSettingWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
 
@@ -45,6 +47,12 @@ ASRPlayerController::ASRPlayerController()
 	if (UI_SELECTWEAPON_C.Succeeded())
 	{
 		SelectWeaponWidgetClass = UI_SELECTWEAPON_C.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<USRSettingWidget> UI_SETTING_C(TEXT("/Game/UI/UI_Settings.UI_Settings_C"));
+	if (UI_SETTING_C.Succeeded())
+	{
+		SettingWidgetClass = UI_SETTING_C.Class;
 	}
 }
 
@@ -95,6 +103,7 @@ void ASRPlayerController::BeginPlay()
 
 	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
 	HuddyWidget = CreateWidget<UUserWidget>(this, HuddyWidgetClass);
+	SettingWidget = CreateWidget<USRSettingWidget>(this, SettingWidgetClass);
 
 	SRPlayerState = Cast<ASRPlayerState>(PlayerState);
 	if (nullptr != SRPlayerState)
@@ -187,4 +196,22 @@ void ASRPlayerController::TurnOffSelectWeaponWidget()
 
 	SetPause(false);
 	ChangeInputMode(true);
+}
+
+void ASRPlayerController::TurnOnSettingWidget()
+{
+	if (!SettingWidget)
+	{
+		SettingWidget = CreateWidget<USRSettingWidget>(this, SettingWidgetClass);
+	}
+	ensure(nullptr != SettingWidget);
+	USRSaveGame* SaveGame = Cast<USRSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("Save1"), 0));
+	if (nullptr == SaveGame)
+	{
+		SaveGame = GetMutableDefault<USRSaveGame>();
+	}
+
+	SettingWidget->UpdateSettingData(SaveGame);
+
+	SettingWidget->AddToViewport();
 }
