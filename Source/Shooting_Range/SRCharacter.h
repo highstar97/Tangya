@@ -77,4 +77,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	int32 AimingAngle;
+
+	//UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	//float MouseSensitivity = 1.0f;
 };
