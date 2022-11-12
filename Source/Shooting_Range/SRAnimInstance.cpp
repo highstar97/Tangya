@@ -6,6 +6,7 @@ USRAnimInstance::USRAnimInstance()
 	bZoomIn = false;
 	bCanJump = true;
 	bCrouching = false;
+	bIsEquiping = false;
 	Speed = 0.0f;
 	Direction = 0.0f;
 	UpDown = 0.0f;
@@ -33,19 +34,19 @@ void USRAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		Speed = sqrt(pow(Pawn->GetVelocity().X, 2) + pow(Pawn->GetVelocity().Y, 2));
 		Direction = CalculateDirection(Pawn->GetVelocity(), Pawn->GetActorRotation());
-		FVector EulerVector = Pawn->GetControlRotation().Euler();
-		UpDown = EulerVector.Y <= 45.0f ? EulerVector.Y : EulerVector.Y - 360.0f;
+		FRotator ControlRotation = Pawn->GetControlRotation();
+		UpDown = ControlRotation.Pitch <= 45.0f ? ControlRotation.Pitch : ControlRotation.Pitch - 360.0f;
 		if (Speed > 0.0f)
 		{
-			LastRotationYaw = Pawn->GetControlRotation().Euler().Z;
+			LastRotation = ControlRotation;
 		}
-		if (LastRotationYaw < 180.0f)
+		if (LastRotation.Yaw < 180.0f)
 		{
-			LeftRight = EulerVector.Z <= LastRotationYaw + 180.0f ? EulerVector.Z - LastRotationYaw : EulerVector.Z - EulerVector.Z - 360.0f;
+			LeftRight = ControlRotation.Yaw <= LastRotation.Yaw + 180.0f ? ControlRotation.Yaw - LastRotation.Yaw : ControlRotation.Yaw - LastRotation.Yaw - 360.0f;
 		}
 		else
 		{
-			LeftRight = EulerVector.Z >= LastRotationYaw - 180.0f ? EulerVector.Z - LastRotationYaw : EulerVector.Z - EulerVector.Z + 360.0f;
+			LeftRight = ControlRotation.Yaw >= LastRotation.Yaw - 180.0f ? ControlRotation.Yaw - LastRotation.Yaw : ControlRotation.Yaw - LastRotation.Yaw + 360.0f;
 		}
 	}
 }
@@ -63,6 +64,11 @@ void USRAnimInstance::SetbCanJump(bool boolean)
 void USRAnimInstance::SetbCrouching(bool boolean)
 {
 	bCrouching = boolean;
+}
+
+void USRAnimInstance::SetbIsEquiping(bool boolean)
+{
+	bIsEquiping = boolean;
 }
 
 void USRAnimInstance::ChangebZoomIn()

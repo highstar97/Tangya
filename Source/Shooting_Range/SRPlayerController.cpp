@@ -5,6 +5,7 @@
 #include "SRGamePlayWidget.h"
 #include "SRCheckRankWidget.h"
 #include "SRRankingWidget.h"
+#include "SRSelectWeaponWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
 
@@ -38,6 +39,12 @@ ASRPlayerController::ASRPlayerController()
 	if (UI_RANKING_C.Succeeded())
 	{
 		RankingWidgetClass = UI_RANKING_C.Class;
+	}
+
+	static ConstructorHelpers::FClassFinder<USRSelectWeaponWidget> UI_SELECTWEAPON_C(TEXT("/Game/UI/UI_SelectWeapon.UI_SelectWeapon_C"));
+	if (UI_SELECTWEAPON_C.Succeeded())
+	{
+		SelectWeaponWidgetClass = UI_SELECTWEAPON_C.Class;
 	}
 }
 
@@ -87,10 +94,7 @@ void ASRPlayerController::BeginPlay()
 	PlayerCameraManager->ViewPitchMax = 45.0f;
 
 	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
-	HUDWidget->AddToViewport();
-
 	HuddyWidget = CreateWidget<UUserWidget>(this, HuddyWidgetClass);
-	HuddyWidget->AddToViewport();
 
 	SRPlayerState = Cast<ASRPlayerState>(PlayerState);
 	if (nullptr != SRPlayerState)
@@ -130,7 +134,31 @@ void ASRPlayerController::OnGameEnd()
 	ChangeInputMode(false);
 }
 
-void ASRPlayerController::ShowRankingWidget()
+void ASRPlayerController::TurnOnHUDWidget()
+{
+	ensure(nullptr != HUDWidget);
+	HUDWidget->AddToViewport();
+}
+
+void ASRPlayerController::TurnOffHUDWidget()
+{
+	ensure(nullptr != HUDWidget);
+	HUDWidget->RemoveFromParent();
+}
+
+void ASRPlayerController::TurnOnHuddyWidget()
+{
+	ensure(nullptr != HuddyWidget);
+	HuddyWidget->AddToViewport();
+}
+
+void ASRPlayerController::TurnOffHuddyWidget()
+{
+	ensure(nullptr != HuddyWidget);
+	HuddyWidget->RemoveFromParent();
+}
+
+void ASRPlayerController::TurnOnRankingWidget()
 {
 	RankingWidget = CreateWidget<USRRankingWidget>(this, RankingWidgetClass);
 	ensure(nullptr != RankingWidget);
@@ -139,4 +167,24 @@ void ASRPlayerController::ShowRankingWidget()
 
 	SetPause(true);
 	ChangeInputMode(false);
+}
+
+void ASRPlayerController::TurnOnSelectWeaponWidget()
+{
+	SelectWeaponWidget = CreateWidget<USRSelectWeaponWidget>(this, SelectWeaponWidgetClass);
+	ensure(nullptr != SelectWeaponWidget);
+	SelectWeaponWidget->AddToViewport();
+	SelectWeaponWidget->UpdateWidget();
+
+	SetPause(true);
+	ChangeInputMode(false);
+}
+
+void ASRPlayerController::TurnOffSelectWeaponWidget()
+{
+	ensure(nullptr != SelectWeaponWidget);
+	SelectWeaponWidget->RemoveFromParent();
+
+	SetPause(false);
+	ChangeInputMode(true);
 }
