@@ -375,16 +375,14 @@ void ASRCharacter::Fire()
 			ASREmptyBullet* EmptyBullet = Weapon->ShootEmptyBullet(World, ShellEjectLocation, ShellEjectRotation, SpawnParams);
 		}
 
+		SRAnim->PlayAttackMontage();
+
 		FName MuzzleSocket(TEXT("Muzzle"));
 		UGameplayStatics::SpawnEmitterAttached(Weapon->GetMuzzleParticle(), Weapon->GetMesh(), MuzzleSocket);
 		UGameplayStatics::SpawnEmitterAttached(Weapon->GetBulletTrailParticle(), Weapon->GetMesh(), MuzzleSocket);
 
 		UGameplayStatics::PlaySound2D(World, Weapon->GetAttackSound());
 
-		FRotator BaseRoatoion = GetViewRotation();
-		GetMesh()->SetRelativeRotation(CameraRotation);
-		SRAnim->PlayAttackMontage();
-		GetMesh()->SetRelativeRotation(BaseRoatoion);
 		SRPlayerController->SubtractCurrentBullet();
 	}
 }

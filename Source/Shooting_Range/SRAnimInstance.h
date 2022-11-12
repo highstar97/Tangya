@@ -25,6 +25,8 @@ public:
 	bool GetbIsEquiping() { return bIsEquiping; }
 	void SetbIsEquiping(bool boolean);
 
+	FRotator GetLastRotation() { return LastRotation; }
+
 	void ChangebZoomIn();
 
 	void PlayAttackMontage();
@@ -57,8 +59,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	float LeftRight;
 
-	UPROPERTY()
-	float LastRotationYaw = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
+	FRotator LastRotation;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;
