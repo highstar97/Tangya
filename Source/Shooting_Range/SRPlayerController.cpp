@@ -139,7 +139,7 @@ void ASRPlayerController::OnGameEnd()
 	CheckRankWidget->AddToViewport();
 	CheckRankWidget->UpdateWidget();
 
-	SetPause(true);
+	//SetPause(true);
 	ChangeInputMode(false);
 }
 
