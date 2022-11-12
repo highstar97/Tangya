@@ -3,7 +3,6 @@
 #include "Blueprint/UserWidget.h"
 #include "SRRankingWidget.generated.h"
 
-class USRRankInfoWidget;
 class UListView;
 
 UCLASS()

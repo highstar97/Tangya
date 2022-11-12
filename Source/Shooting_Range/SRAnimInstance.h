@@ -22,6 +22,11 @@ public:
 	bool GetbCrouching() { return bCrouching; }
 	void SetbCrouching(bool boolean);
 
+	bool GetbIsEquiping() { return bIsEquiping; }
+	void SetbIsEquiping(bool boolean);
+
+	FRotator GetLastRotation() { return LastRotation; }
+
 	void ChangebZoomIn();
 
 	void PlayAttackMontage();
@@ -40,6 +45,9 @@ private:
 	bool bCrouching;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
+	bool bIsEquiping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	float Speed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
@@ -51,8 +59,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	float LeftRight;
 
-	UPROPERTY()
-	float LastRotationYaw = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
+	FRotator LastRotation;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;
