@@ -13,7 +13,7 @@ AKA74U_X::AKA74U_X()
 	}
 
 	Name = TEXT("KA47U");
-	Ability = TEXT("Åº¾Ë -3, Á¡¼ö +2");
+	Ability = TEXT("\nTotal Bullet -3, Score per Bullet +2");
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_WEAPON(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/KA74U/SK_KA74U_X.SK_KA74U_X"));
 	if (SK_WEAPON.Succeeded())

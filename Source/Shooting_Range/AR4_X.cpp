@@ -13,7 +13,7 @@ AAR4_X::AAR4_X()
 	}
 
 	Name = TEXT("AR4");
-	Ability = TEXT("Åº¾Ë + 3");
+	Ability = TEXT("\nTotal Bullet + 3");
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SK_WEAPON(TEXT("/Game/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4_X.SK_AR4_X"));
 	if (SK_WEAPON.Succeeded())
