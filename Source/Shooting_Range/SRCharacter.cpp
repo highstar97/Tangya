@@ -385,7 +385,7 @@ void ASRCharacter::Fire()
 		}
 
 		SRAnim->PlayAttackMontage();
-
+		
 		FName MuzzleSocket(TEXT("Muzzle"));
 		UGameplayStatics::SpawnEmitterAttached(Weapon->GetMuzzleParticle(), Weapon->GetMesh(), MuzzleSocket);
 		UGameplayStatics::SpawnEmitterAttached(Weapon->GetBulletTrailParticle(), Weapon->GetMesh(), MuzzleSocket);

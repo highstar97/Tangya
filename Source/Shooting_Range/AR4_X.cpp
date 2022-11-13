@@ -69,7 +69,7 @@ ASRBullet* AAR4_X::ShootBullet(UWorld* World, FVector MuzzleLocation, FRotator M
 		Bullet = World->SpawnActor<ABullet762x39>(ABullet762x39::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
 		if (Bullet)
 		{
-			Bullet->SetActorScale3D(FVector(5.0f, 5.0f, 5.0f));
+			//Bullet->SetActorScale3D(FVector(5.0f, 5.0f, 5.0f));
 			FVector LaunchDirection = MuzzleRotation.Vector();
 			Bullet->FireInDirection(LaunchDirection);
 		}
@@ -86,7 +86,7 @@ ASREmptyBullet* AAR4_X::ShootEmptyBullet(UWorld* World, FVector ShellEjectLocati
 		EmptyBullet = World->SpawnActor<AEmptyBullet762x39>(AEmptyBullet762x39::StaticClass(), ShellEjectLocation, ShellEjectRotation, SpawnParams);
 		if (EmptyBullet)
 		{
-			EmptyBullet->SetActorScale3D(FVector(5.0f, 5.0f, 5.0f));
+			//EmptyBullet->SetActorScale3D(FVector(5.0f, 5.0f, 5.0f));
 			FVector LaunchDirection = ShellEjectRotation.Vector();
 			EmptyBullet->BounceOff(LaunchDirection);
 		}
