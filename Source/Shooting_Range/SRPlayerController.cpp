@@ -137,7 +137,14 @@ void ASRPlayerController::OnGameEnd()
 	CheckRankWidget = CreateWidget<USRCheckRankWidget>(this, CheckRankWidgetClass);
 	ensure(nullptr != CheckRankWidget);
 	CheckRankWidget->AddToViewport();
-	CheckRankWidget->UpdateWidget();
+	FTimerHandle WaitHandle;
+	float WaitTime = 1.0f;
+	GetWorld()->GetTimerManager().SetTimer(WaitHandle, FTimerDelegate::CreateLambda([&]()
+		{
+
+			CheckRankWidget->UpdateWidget();
+
+		}), WaitTime, false);
 
 	//SetPause(true);
 	ChangeInputMode(false);
