@@ -1,5 +1,7 @@
 #include "SRPlayerState.h"
 #include "Shooting_RangeGameModeBase.h"
+#include "SRGameMode.h"
+#include "SRInfinityGameMode.h"
 
 ASRPlayerState::ASRPlayerState()
 {
@@ -19,10 +21,29 @@ void ASRPlayerState::SetCurrentBullets(int32 NumOfBullets)
 	CurrentBullets = NumOfBullets;
 	OnPlayerStateChanged.Broadcast();
 
-	if (NumOfBullets == 0)
+	auto GameMode = Cast<AShooting_RangeGameModeBase>(GetWorld()->GetAuthGameMode());
+	switch (GameMode->GetGameMode())
 	{
-		auto GameMode = Cast<AShooting_RangeGameModeBase>(GetWorld()->GetAuthGameMode());
-		GameMode->NumOfBulletIsZero(PlayerController);		
+	case(EGameMode::BASE):
+	{
+		break;
+	}
+	case(EGameMode::BASIC):
+	{
+		if (NumOfBullets == 0)
+		{
+			Cast<ASRGameMode>(GameMode)->NumOfBulletIsZero(PlayerController);
+		}
+		break;
+	}
+	case(EGameMode::INF):
+	{
+		break;
+	}
+	default:
+	{
+		break;
+	}
 	}
 }
 

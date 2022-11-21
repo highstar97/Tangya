@@ -3,7 +3,12 @@
 #include "GameFramework/GameModeBase.h"
 #include "Shooting_RangeGameModeBase.generated.h"
 
-class ASRPlayerController;
+enum class EGameMode
+{
+	BASE,
+	BASIC,
+	INF,
+};
 
 UCLASS()
 class SHOOTING_RANGE_API AShooting_RangeGameModeBase : public AGameModeBase
@@ -15,11 +20,13 @@ public:
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
-	void NumOfBulletIsZero(ASRPlayerController* Controller);
-
 	int32 GetTotalBullets() { return TotalBullets; }
 
-private:
+	EGameMode GetGameMode() { return GameMode; }
+
+protected:
 	UPROPERTY()
 	int32 TotalBullets;
+
+	EGameMode GameMode;
 };

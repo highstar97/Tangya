@@ -293,6 +293,11 @@ void ASRCharacter::EquipWeapon(ASRWeapon* NewWeapon)
 		return;
 	}
 
+	if (IsValid(Weapon))
+	{
+		Weapon->Destroy();
+	}
+
 	Weapon = NewWeapon;
 
 	FName WeaponSocket(TEXT("hand_rSocket"));

@@ -114,7 +114,10 @@ void ASRPlayerController::AddGameScore(int32 EarnedScore)
 
 void ASRPlayerController::SubtractCurrentBullet()
 {
-	SRPlayerState->SetCurrentBullets(SRPlayerState->GetCurrentBullets() - 1);
+	if (Cast<AShooting_RangeGameModeBase>(GetWorld()->GetAuthGameMode())->GetGameMode() == EGameMode::BASIC)
+	{
+		SRPlayerState->SetCurrentBullets(SRPlayerState->GetCurrentBullets() - 1);
+	}
 }
 
 void ASRPlayerController::AddTotalBullet(EWeaponAbilityBullet WeaponAbilityBullet)
