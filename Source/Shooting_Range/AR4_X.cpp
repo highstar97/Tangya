@@ -23,6 +23,9 @@ AAR4_X::AAR4_X()
 
 	Bullet = CreateDefaultSubobject<ABullet762x39>(TEXT("BULLET_7.62"));
 	EmptyBullet = CreateDefaultSubobject<AEmptyBullet762x39>(TEXT("EMPTYBULLET_7.62"));
+
+	WeaponAbilityScore = EWeaponAbilityScore::NONE;
+	WeaponAbilityBullet = EWeaponAbilityBullet::ADD3;
 }
 
 UTexture2D* AAR4_X::GetImage()

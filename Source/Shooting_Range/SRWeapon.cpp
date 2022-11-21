@@ -36,6 +36,9 @@ ASRWeapon::ASRWeapon()
 
 	Bullet = CreateDefaultSubobject<ASRBullet>(TEXT("BULLET"));
 	EmptyBullet = CreateDefaultSubobject<ASREmptyBullet>(TEXT("EMPTYBULLET"));
+
+	WeaponAbilityScore = EWeaponAbilityScore::NONE;
+	WeaponAbilityBullet = EWeaponAbilityBullet::NONE;
 }
 
 ASRBullet* ASRWeapon::ShootBullet(UWorld* World, FVector MuzzleLocation, FRotator MuzzleRotation, FActorSpawnParameters SpawnParams)

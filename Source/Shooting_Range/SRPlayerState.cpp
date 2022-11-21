@@ -8,7 +8,7 @@ ASRPlayerState::ASRPlayerState()
 	TotalBullets = 2;
 }
 
-void ASRPlayerState::AddGameScore(int EarnedScore)
+void ASRPlayerState::AddGameScore(int32 EarnedScore)
 {
 	GameScore += EarnedScore;
 	OnPlayerStateChanged.Broadcast();

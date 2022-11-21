@@ -1,4 +1,5 @@
 #include "SRPlayerController.h"
+#include "SRCharacter.h"
 #include "Shooting_RangeGameModeBase.h"
 #include "SRPlayerState.h"
 #include "SRSaveGame.h"
@@ -82,14 +83,68 @@ void ASRPlayerController::ChangeInputMode(bool bGameMode)
 	}
 }
 
-void ASRPlayerController::AddGameScore(int EarnedScore)
+void ASRPlayerController::AddGameScore(int32 EarnedScore)
 {
-	SRPlayerState->AddGameScore(EarnedScore);
+	int32 BonusScore = 0;
+	switch (Cast<ASRCharacter>(GetCharacter())->Weapon->GetWeaponAbilityScore())
+	{
+	case(EWeaponAbilityScore::NONE):
+	{
+		BonusScore = 0;
+		break;
+	}
+	case(EWeaponAbilityScore::ADD1):
+	{
+		BonusScore = 1;
+		break;
+	}
+	case(EWeaponAbilityScore::ADD2):
+	{
+		BonusScore = 2;
+		break;
+	}
+	default:
+	{
+		BonusScore = 0;
+		break;
+	}
+	}
+	SRPlayerState->AddGameScore(EarnedScore + BonusScore);
 }
 
 void ASRPlayerController::SubtractCurrentBullet()
 {
 	SRPlayerState->SetCurrentBullets(SRPlayerState->GetCurrentBullets() - 1);
+}
+
+void ASRPlayerController::AddTotalBullet(EWeaponAbilityBullet WeaponAbilityBullet)
+{
+	int32 BonusBullet = 0;
+	switch (WeaponAbilityBullet)
+	{
+	case(EWeaponAbilityBullet::NONE):
+	{
+		BonusBullet = 0;
+		break;
+	}
+	case(EWeaponAbilityBullet::ADD3):
+	{
+		BonusBullet = 3;
+		break;
+	}
+	case(EWeaponAbilityBullet::SUBTRACT3):
+	{
+		BonusBullet = -3;
+		break;
+	}
+	default:
+	{
+		BonusBullet = 0;
+		break;
+	}
+	}
+	SRPlayerState->SetTotalBullets(SRPlayerState->GetTotalBullets() + BonusBullet);
+	SRPlayerState->SetCurrentBullets(SRPlayerState->GetTotalBullets());
 }
 
 void ASRPlayerController::BeginPlay()

@@ -320,6 +320,7 @@ void ASRCharacter::EquipWeapon(ASRWeapon* NewWeapon)
 		}
 	}
 
+	SRPlayerController->AddTotalBullet(Weapon->GetWeaponAbilityBullet());
 	SRAnim->SetbIsEquiping(true);
 }
 

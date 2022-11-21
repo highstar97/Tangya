@@ -17,7 +17,7 @@ public:
 
 	void BindPlayerController(ASRPlayerController* Controller) { PlayerController = Controller; };
 
-	void AddGameScore(int EarnedScore);
+	void AddGameScore(int32 EarnedScore);
 	int32 GetGameScore() { return GameScore; }
 
 	void SetCurrentBullets(int32 NumOfBullets);

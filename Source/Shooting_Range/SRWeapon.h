@@ -7,6 +7,20 @@ class ASRBullet;
 class ASREmptyBullet;
 class UParticleSystem;
 
+enum class EWeaponAbilityScore
+{
+	NONE = 0,
+	ADD1 = 1,
+	ADD2 = 2,
+};
+
+enum class EWeaponAbilityBullet
+{
+	NONE = 0,
+	ADD3 = 3,
+	SUBTRACT3 = -3,
+};
+
 UCLASS()
 class SHOOTING_RANGE_API ASRWeapon : public AActor
 {
@@ -22,6 +36,8 @@ public:
 	virtual UParticleSystem* GetMuzzleParticle() { return MuzzleParticle; }
 	UParticleSystem* GetBulletTrailParticle() { return BulletTrailParticle; }
 	virtual USoundWave* GetAttackSound() { return AttackSound; }
+	virtual EWeaponAbilityScore GetWeaponAbilityScore() { return WeaponAbilityScore; }
+	virtual EWeaponAbilityBullet GetWeaponAbilityBullet() { return WeaponAbilityBullet; }
 
 	virtual ASRBullet* ShootBullet(UWorld* World, FVector MuzzleLocation, FRotator MuzzleRotation, FActorSpawnParameters SpawnParams);
 	virtual ASREmptyBullet* ShootEmptyBullet(UWorld* World, FVector ShellEjectLocation, FRotator ShellEjectRotation, FActorSpawnParameters SpawnParams);
@@ -60,4 +76,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	ASREmptyBullet* EmptyBullet;
+
+	EWeaponAbilityScore WeaponAbilityScore = EWeaponAbilityScore::NONE;
+
+	EWeaponAbilityBullet WeaponAbilityBullet = EWeaponAbilityBullet::NONE;
 };

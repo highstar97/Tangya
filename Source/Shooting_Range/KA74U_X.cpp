@@ -23,6 +23,9 @@ AKA74U_X::AKA74U_X()
 
 	Bullet = CreateDefaultSubobject<ABullet762x39>(TEXT("BULLET_7.62"));
 	EmptyBullet = CreateDefaultSubobject<AEmptyBullet762x39>(TEXT("EMPTYBULLET_7.62"));
+
+	WeaponAbilityScore = EWeaponAbilityScore::ADD2;
+	WeaponAbilityBullet = EWeaponAbilityBullet::SUBTRACT3;
 }
 
 UTexture2D* AKA74U_X::GetImage()

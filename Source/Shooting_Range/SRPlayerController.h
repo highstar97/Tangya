@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameFramework/PlayerController.h"
+#include "SRWeapon.h"
 #include "SRPlayerController.generated.h"
 
 class UHUDWidget;
@@ -28,9 +29,11 @@ public:
 	ASRPlayerState* GetPlayerState() { return SRPlayerState; };
 
 	UFUNCTION(BlueprintCallable)
-	void AddGameScore(int EarnedScore);
+	void AddGameScore(int32 EarnedScore);
 
 	void SubtractCurrentBullet();
+
+	void AddTotalBullet(EWeaponAbilityBullet WeaponAbilityBullet);
 
 	void OnGameEnd();
 
