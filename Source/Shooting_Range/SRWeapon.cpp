@@ -28,7 +28,7 @@ ASRWeapon::ASRWeapon()
 		BulletTrailParticle = P_BULLETTRAIL.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundWave> ATTACKSOUND(TEXT("/Game/Indoor_Shooting_Range/Map/FirstPerson/Audio/FirstPersonTemplateWeaponFire02.FirstPersonTemplateWeaponFire02"));
+	static ConstructorHelpers::FObjectFinder<USoundWave> ATTACKSOUND(TEXT("/Game/Sounds/FirstPersonTemplateWeaponFire02.FirstPersonTemplateWeaponFire02"));
 	if (ATTACKSOUND.Succeeded())
 	{
 		AttackSound = ATTACKSOUND.Object;
