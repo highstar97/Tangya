@@ -16,8 +16,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void Tick(float DeltaSeconds) override;
-
 public:
 	virtual void FireInDirection(const FVector& ShootDirection);
 

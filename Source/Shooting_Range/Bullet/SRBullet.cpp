@@ -26,11 +26,6 @@ void ASRBullet::BeginPlay()
 	
 }
 
-void ASRBullet::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-}
-
 void ASRBullet::FireInDirection(const FVector& ShootDirection)
 {
 	ProjectileMovementComponent->Velocity = ShootDirection * ProjectileMovementComponent->InitialSpeed;
