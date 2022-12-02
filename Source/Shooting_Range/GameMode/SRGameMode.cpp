@@ -20,6 +20,12 @@ void ASRGameMode::PostLogin(APlayerController* NewPlayer)
 	UE_LOG(LogTemp, Warning, TEXT("PostLogin End"));
 }
 
+int32 ASRGameMode::GetTotalBullets()
+{
+	Super::GetTotalBullets();
+	return TotalBullets;
+}
+
 void ASRGameMode::NumOfBulletIsZero(ASRPlayerController* Controller)
 {
 	ensure(nullptr != Controller);

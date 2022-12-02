@@ -15,7 +15,7 @@ public:
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
-	void NumOfBulletIsZero(ASRPlayerController* Controller);
+	virtual int32 GetTotalBullets() override;
 
-	int32 GetTotalBullets() { return TotalBullets; }
+	void NumOfBulletIsZero(ASRPlayerController* Controller);
 };

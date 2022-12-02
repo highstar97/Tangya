@@ -20,7 +20,7 @@ public:
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
-	int32 GetTotalBullets() { return TotalBullets; }
+	virtual int32 GetTotalBullets() { return TotalBullets; }
 
 	EGameMode GetGameMode() { return GameMode; }
 
