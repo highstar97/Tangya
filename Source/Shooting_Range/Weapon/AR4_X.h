@@ -16,6 +16,7 @@ public:
 	virtual FString GetAbility() override;
 	virtual USkeletalMeshComponent* GetMesh() override;
 	virtual UParticleSystem* GetMuzzleParticle() override;
+	virtual UParticleSystem* GetBulletTrailParticle() override;
 	virtual USoundWave* GetAttackSound() override;
 
 	virtual ASRBullet* ShootBullet(UWorld* World, FVector MuzzleLocation, FRotator MuzzleRotation, FActorSpawnParameters SpawnParams) override;

@@ -58,6 +58,12 @@ UParticleSystem* AAR4_X::GetMuzzleParticle()
 	return MuzzleParticle;
 }
 
+UParticleSystem* AAR4_X::GetBulletTrailParticle()
+{
+	Super::GetBulletTrailParticle();
+	return BulletTrailParticle;
+}
+
 USoundWave* AAR4_X::GetAttackSound()
 {
 	Super::GetAttackSound();

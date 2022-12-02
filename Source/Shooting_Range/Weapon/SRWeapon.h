@@ -34,7 +34,7 @@ public:
 	virtual FString GetAbility() { return Ability; }
 	virtual USkeletalMeshComponent* GetMesh() { return Mesh; }
 	virtual UParticleSystem* GetMuzzleParticle() { return MuzzleParticle; }
-	UParticleSystem* GetBulletTrailParticle() { return BulletTrailParticle; }
+	virtual UParticleSystem* GetBulletTrailParticle() { return BulletTrailParticle; }
 	virtual USoundWave* GetAttackSound() { return AttackSound; }
 	virtual EWeaponAbilityScore GetWeaponAbilityScore() { return WeaponAbilityScore; }
 	virtual EWeaponAbilityBullet GetWeaponAbilityBullet() { return WeaponAbilityBullet; }

@@ -58,6 +58,12 @@ UParticleSystem* AKA47_X::GetMuzzleParticle()
 	return MuzzleParticle;
 }
 
+UParticleSystem* AKA47_X::GetBulletTrailParticle()
+{
+	Super::GetBulletTrailParticle();
+	return BulletTrailParticle;
+}
+
 USoundWave* AKA47_X::GetAttackSound()
 {
 	Super::GetAttackSound();
