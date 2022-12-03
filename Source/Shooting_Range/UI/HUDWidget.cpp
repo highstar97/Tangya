@@ -14,13 +14,23 @@ void UHUDWidget::BindPlayerState(ASRPlayerState* PlayerState)
 	PlayerState->OnPlayerStateChanged.AddUObject(this, &UHUDWidget::UpdatePlayerState);
 }
 
+void UHUDWidget::UpdateTimingCatcher()
+{
+	if (nullptr == TimingCatcher)
+	{
+		return;
+	}
+
+	TimingCatcher->SetPercent(GetGaugeRatio());
+}
+
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	if (bGauging)
 	{
-		AddGauge();
+		AddGauge(InDeltaTime);
 		UpdateTimingCatcher();
 	}
 }
@@ -45,19 +55,9 @@ void UHUDWidget::UpdatePlayerState()
 	TotalBullets->SetText(FText::FromString(FString("/ ") + FString::FromInt(CurrentPlayerState->GetTotalBullets())));
 }
 
-void UHUDWidget::UpdateTimingCatcher()
+void UHUDWidget::AddGauge(float InDeltaTime)
 {
-	if (nullptr == TimingCatcher)
-	{
-		return;
-	}
-
-	TimingCatcher->SetPercent(GetGaugeRatio());
-}
-
-void UHUDWidget::AddGauge()
-{
-	Gauge += 8.0f;
+	Gauge += 150.0f * InDeltaTime;
 	
 	if (Gauge > 200.0f)
 	{

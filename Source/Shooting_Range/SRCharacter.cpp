@@ -409,6 +409,7 @@ void ASRCharacter::Gauging()
 	ASRPlayerController* PlayerController = Cast<ASRPlayerController>(GetController());
 	if (PlayerController)
 	{
+		PlayerController->ChangeGauge(0.0f);
 		PlayerController->ChangebGauging(true);
 	}
 }

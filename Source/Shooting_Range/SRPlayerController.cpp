@@ -298,3 +298,12 @@ void ASRPlayerController::ChangebGauging(bool NewBoolean)
 		HUDWidget->SetbGauging(NewBoolean);
 	}
 }
+
+void ASRPlayerController::ChangeGauge(float NewGauge)
+{
+	if (HUDWidget)
+	{
+		HUDWidget->SetGauge(NewGauge);
+		HUDWidget->UpdateTimingCatcher();
+	}
+}

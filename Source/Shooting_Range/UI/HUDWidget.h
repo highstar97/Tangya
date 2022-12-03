@@ -16,7 +16,12 @@ public:
 	void BindPlayerState(ASRPlayerState* PlayerState);
 
 	void SetbGauging(bool NewBoolean) { bGauging = NewBoolean; };
+
 	float GetGauge() { return Gauge; };
+	void SetGauge(float NewGauge) { Gauge = NewGauge; }
+
+	void UpdateTimingCatcher();
+
 protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
@@ -24,10 +29,8 @@ protected:
 
 	void UpdatePlayerState();
 
-	void UpdateTimingCatcher();
-
 private:
-	void AddGauge();
+	void AddGauge(float InDeltaTime);
 	float GetGaugeRatio();
 
 private:

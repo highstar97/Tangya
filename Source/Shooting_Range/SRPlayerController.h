@@ -54,6 +54,7 @@ public:
 	void TurnOnSettingWidget();
 
 	void ChangebGauging(bool NewBoolean);
+	void ChangeGauge(float NewGauge);
 
 protected:
 	virtual void BeginPlay() override;
