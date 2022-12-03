@@ -12,9 +12,15 @@ public class Shooting_Range : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
+		PrivateIncludePaths.Add("Shooting_Range");
+		PrivateIncludePaths.Add("Shooting_Range/Bullet");
+		PrivateIncludePaths.Add("Shooting_Range/GameMode");
+		PrivateIncludePaths.Add("Shooting_Range/UI");
+		PrivateIncludePaths.Add("Shooting_Range/Weapon");
+
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-		
+
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 
