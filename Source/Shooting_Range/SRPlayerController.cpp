@@ -83,7 +83,17 @@ void ASRPlayerController::ChangeInputMode(bool bGameMode)
 	}
 }
 
-void ASRPlayerController::AddGameScore(int32 EarnedScore)
+float ASRPlayerController::GetGauge()
+{
+	if (HUDWidget)
+	{
+		return HUDWidget->GetGauge();
+	}
+
+	return -1.0f;
+}
+
+void ASRPlayerController::AddGameScore(int EarnedScore)
 {
 	int32 BonusScore = 0;
 	switch (Cast<ASRCharacter>(GetCharacter())->Weapon->GetWeaponAbilityScore())
@@ -279,4 +289,12 @@ void ASRPlayerController::TurnOnSettingWidget()
 	SettingWidget->UpdateSettingData(SaveGame);
 
 	SettingWidget->AddToViewport();
+}
+
+void ASRPlayerController::ChangebGauging(bool NewBoolean)
+{
+	if (HUDWidget)
+	{
+		HUDWidget->SetbGauging(NewBoolean);
+	}
 }

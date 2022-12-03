@@ -5,6 +5,7 @@
 
 class ASRPlayerState;
 class UTextBlock;
+class UProgressBar;
 
 UCLASS()
 class SHOOTING_RANGE_API UHUDWidget : public UUserWidget
@@ -14,15 +15,24 @@ class SHOOTING_RANGE_API UHUDWidget : public UUserWidget
 public:
 	void BindPlayerState(ASRPlayerState* PlayerState);
 
+	void SetbGauging(bool NewBoolean) { bGauging = NewBoolean; };
+	float GetGauge() { return Gauge; };
 protected:
-	void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+	virtual void NativeConstruct() override;
 
 	void UpdatePlayerState();
+
+	void UpdateTimingCatcher();
+
+private:
+	void AddGauge();
+	float GetGaugeRatio();
 
 private:
 	TWeakObjectPtr<ASRPlayerState> CurrentPlayerState;
 
-private:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Score;
 
@@ -34,4 +44,14 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TotalBullets;
+
+	UPROPERTY(meta = (BindWidget))
+	UProgressBar* TimingCatcher;
+
+	UPROPERTY(VisibleAnywhere)
+	float Gauge;
+
+	bool bGauging;
+
+
 };

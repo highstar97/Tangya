@@ -27,6 +27,7 @@ public:
 	void ChangeInputMode(bool bGameMode = true);
 
 	ASRPlayerState* GetPlayerState() { return SRPlayerState; };
+	float GetGauge();
 
 	UFUNCTION(BlueprintCallable)
 	void AddGameScore(int32 EarnedScore);
@@ -51,6 +52,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void TurnOnSettingWidget();
+
+	void ChangebGauging(bool NewBoolean);
 
 protected:
 	virtual void BeginPlay() override;
