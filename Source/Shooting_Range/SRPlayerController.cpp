@@ -82,6 +82,16 @@ void ASRPlayerController::ChangeInputMode(bool bGameMode)
 	}
 }
 
+float ASRPlayerController::GetGauge()
+{
+	if (HUDWidget)
+	{
+		return HUDWidget->GetGauge();
+	}
+
+	return -1.0f;
+}
+
 void ASRPlayerController::AddGameScore(int EarnedScore)
 {
 	SRPlayerState->AddGameScore(EarnedScore);
@@ -221,4 +231,12 @@ void ASRPlayerController::TurnOnSettingWidget()
 	SettingWidget->UpdateSettingData(SaveGame);
 
 	SettingWidget->AddToViewport();
+}
+
+void ASRPlayerController::ChangebGauging(bool NewBoolean)
+{
+	if (HUDWidget)
+	{
+		HUDWidget->SetbGauging(NewBoolean);
+	}
 }

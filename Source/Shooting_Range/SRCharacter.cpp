@@ -72,7 +72,8 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ASRCharacter::Crouch);
 	PlayerInputComponent->BindAction(TEXT("ChangeControlView"), EInputEvent::IE_Pressed, this, &ASRCharacter::ChangeControlView);
 	PlayerInputComponent->BindAction(TEXT("ZoomIn"), EInputEvent::IE_Pressed, this, &ASRCharacter::ZoomIn);
-	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Pressed, this, &ASRCharacter::Fire);
+	PlayerInputComponent->BindAction(TEXT("Fire"), EInputEvent::IE_Released, this, &ASRCharacter::Fire);
+	PlayerInputComponent->BindAction(TEXT("Gauging"), EInputEvent::IE_Pressed, this, &ASRCharacter::Gauging);
 	PlayerInputComponent->BindAction(TEXT("Click Up"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickUp);
 	PlayerInputComponent->BindAction(TEXT("Click Down"), EInputEvent::IE_Pressed, this, &ASRCharacter::ClickDown);
 
@@ -370,13 +371,13 @@ void ASRCharacter::Fire()
 			SpawnParams.Owner = this;
 		
 			FireRotation.Pitch += AimingAngle;
-			
+			ApplyBulletAccuracy(SRPlayerController->GetGauge(), FireRotation);
 			ASRBullet* Bullet = Weapon->ShootBullet(World, FireLocation, FireRotation, SpawnParams);
 			if(Bullet)
 			{
 				float Roll = 0.0f;
-				float Pitch = FMath::RandRange(-2.0f, 2.0f);
-				float Yaw = FMath::RandRange(-2.0f, 2.0f);
+				float Pitch = FMath::RandRange(-1.0f, 1.0f);
+				float Yaw = FMath::RandRange(-1.0f, 1.0f);
 				FRotator RandRotation = FRotator(Pitch, Yaw, Roll);
 				SRPlayerController->SetControlRotation(GetControlRotation() + RandRotation);
 			}
@@ -393,7 +394,60 @@ void ASRCharacter::Fire()
 		UGameplayStatics::PlaySound2D(World, Weapon->GetAttackSound());
 
 		SRPlayerController->SubtractCurrentBullet();
+		SRPlayerController->ChangebGauging(false);
 	}
+}
+
+void ASRCharacter::Gauging()
+{
+	ASRPlayerController* PlayerController = Cast<ASRPlayerController>(GetController());
+	if (PlayerController)
+	{
+		PlayerController->ChangebGauging(true);
+	}
+}
+
+void ASRCharacter::ApplyBulletAccuracy(float Gauge, FRotator& FireRotation)
+{
+	float Pitch = 0.0f;
+	float Yaw = 0.0f;
+	const float MinUnder50 = 1.0f;
+	const float MaxUnder50 = 1.5f;
+	const float MinUnder80 = 0.3f;
+	const float MaxUnder80 = 0.7f;
+	if (Gauge == -1.0f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Gauge Error"));
+	}
+
+	if (Gauge < 50.0f)
+	{
+		Pitch = FMath::RandRange(MinUnder50, MaxUnder50);
+		Yaw = FMath::RandRange(MinUnder50, MaxUnder50);
+		
+	}
+	else if (Gauge < 80.0f)
+	{
+		Pitch = FMath::RandRange(MinUnder80, MaxUnder80);
+		Yaw = FMath::RandRange(MinUnder80, MaxUnder80);
+	}
+	else if (Gauge < 120.0f)
+	{
+
+	}
+	else if (Gauge < 150.0f)
+	{
+		Pitch = FMath::RandRange(MinUnder80, MaxUnder80);
+		Yaw = FMath::RandRange(MinUnder80, MaxUnder80);
+	}
+	else
+	{
+		Pitch = FMath::RandRange(MinUnder50, MaxUnder50);
+		Yaw = FMath::RandRange(MinUnder50, MaxUnder50);
+	}
+	int Num = FMath::RandRange(10, 99);
+	(Num / 10) % 2 == 1 ? FireRotation.Pitch += Pitch : FireRotation.Pitch -= Pitch;
+	(Num % 10) % 2 == 1 ? FireRotation.Yaw += Yaw : FireRotation.Yaw -= Yaw;
 }
 
 void ASRCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)

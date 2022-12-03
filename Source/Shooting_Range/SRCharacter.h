@@ -58,6 +58,8 @@ private:
 	void EquipWeapon(ASRWeapon* NewWeapon);
 
 	void Fire();
+	void Gauging();
+	void ApplyBulletAccuracy(float Gauge, FRotator& FireRotation);
 
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
