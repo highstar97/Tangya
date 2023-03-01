@@ -40,6 +40,7 @@ void USRAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		{
 			LastRotation = ControlRotation;
 		}
+		// Calculate left and right rotation angles to apply to animations created with Blend Space
 		if (LastRotation.Yaw < 180.0f)
 		{
 			LeftRight = ControlRotation.Yaw <= LastRotation.Yaw + 180.0f ? ControlRotation.Yaw - LastRotation.Yaw : ControlRotation.Yaw - LastRotation.Yaw - 360.0f;

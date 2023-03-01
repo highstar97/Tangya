@@ -92,12 +92,15 @@ void ASRCharacter::PostInitializeComponents()
 	{
 		UE_LOG(LogTemp, Error, TEXT("SRAnim is nullptr"));
 	}
-
-	SRAnim->OnMontageEnded.AddDynamic(this, &ASRCharacter::OnAttackMontageEnded);
+	else
+	{
+		SRAnim->OnMontageEnded.AddDynamic(this, &ASRCharacter::OnAttackMontageEnded);
+	}
 }
 
 void ASRCharacter::Jump()
 {
+	// The character cannot jump while crouching
 	if (true == SRAnim->GetbCanJump() && false == SRAnim->GetbCrouching())
 	{
 		SRAnim->SetbCanJump(false);
@@ -200,6 +203,7 @@ void ASRCharacter::SetControlMode(EControlView NewControlMode)
 	}
 }
 
+// Depending on the movement state, the collision judgment and max walking speed are different.
 void ASRCharacter::ChangeMovementState(EMovementState NewState)
 {
 	switch (NewState)
@@ -242,6 +246,7 @@ void ASRCharacter::ChangeMovementState(EMovementState NewState)
 	}
 }
 
+// Depending on whether Zoom In or not, the camera used is different
 void ASRCharacter::ZoomIn()
 {
 	if (nullptr != SRAnim)
@@ -263,6 +268,7 @@ void ASRCharacter::ZoomIn()
 	}
 }
 
+// Function for zero point adjustment
 void ASRCharacter::ClickUp()
 {
 	if (SRAnim->GetbIsEquiping())
@@ -330,6 +336,11 @@ void ASRCharacter::EquipWeapon(ASRWeapon* NewWeapon)
 	SRAnim->SetbIsEquiping(true);
 }
 
+/* 
+Depending on whether you zoom in or not, the location where the bullet is fired is different.
+In the case of zoom out, fire from 70cm in front of the Main camera.
+In the case of zoom in, fire from 70cm in front of the camera on the gun(ADSC Camera).
+*/
 void ASRCharacter::Fire()
 {
 	ASRPlayerController* SRPlayerController = Cast<ASRPlayerController>(GetController());
@@ -377,6 +388,8 @@ void ASRCharacter::Fire()
 			SpawnParams.Owner = this;
 		
 			FireRotation.Pitch += AimingAngle;
+			
+			// If the gauge control fails, the direction of the bullet will randomly bounce
 			ApplyBulletAccuracy(SRPlayerController->GetGauge(), FireRotation);
 			ASRBullet* Bullet = Weapon->ShootBullet(World, FireLocation, FireRotation, SpawnParams);
 			if(Bullet)
@@ -393,6 +406,7 @@ void ASRCharacter::Fire()
 
 		SRAnim->PlayAttackMontage();
 		
+		// Add Particles to Muzzle and Add Sound
 		FName MuzzleSocket(TEXT("Muzzle"));
 		UGameplayStatics::SpawnEmitterAttached(Weapon->GetMuzzleParticle(), Weapon->GetMesh(), MuzzleSocket);
 		UGameplayStatics::SpawnEmitterAttached(Weapon->GetBulletTrailParticle(), Weapon->GetMesh(), MuzzleSocket);
@@ -414,6 +428,7 @@ void ASRCharacter::Gauging()
 	}
 }
 
+// Adjust the direction of the bullet slightly according to the gauge of the bullet.
 void ASRCharacter::ApplyBulletAccuracy(float Gauge, FRotator& FireRotation)
 {
 	float Pitch = 0.0f;

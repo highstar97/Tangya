@@ -24,7 +24,7 @@ public:
 	virtual void OnPossess(APawn* aPawn) override;
 
 	UFUNCTION(BlueprintCallable)
-	void ChangeInputMode(bool bGameMode = true);
+	void ChangeInputMode(bool bInputMode = true);
 
 	ASRPlayerState* GetPlayerState() { return SRPlayerState; };
 	float GetGauge();

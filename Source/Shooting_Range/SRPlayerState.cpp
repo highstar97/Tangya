@@ -16,6 +16,7 @@ void ASRPlayerState::AddGameScore(int32 EarnedScore)
 	OnPlayerStateChanged.Broadcast();
 }
 
+// End when the CurrentBullets is zero
 void ASRPlayerState::SetCurrentBullets(int32 NumOfBullets)
 {
 	CurrentBullets = NumOfBullets;

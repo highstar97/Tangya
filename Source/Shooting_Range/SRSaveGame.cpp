@@ -7,6 +7,7 @@ USRSaveGame::USRSaveGame()
 	SettingData.MouseSensitivity = 1.0f;
 }
 
+// In the case of the same score, StableSort was used so users who registered earlier had a higher ranking.
 void USRSaveGame::AddRankData(FSRRankData RankData)
 {
 	RankArray.Emplace(RankData);

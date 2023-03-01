@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
 
+// PlayerController prepares Widgets to be used in advance.
 ASRPlayerController::ASRPlayerController()
 {
 	static ConstructorHelpers::FClassFinder<UHUDWidget> UI_HUD_C(TEXT("/Game/UI/UI_HUD.UI_HUD_C"));
@@ -60,18 +61,18 @@ ASRPlayerController::ASRPlayerController()
 void ASRPlayerController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	UE_LOG(LogTemp, Warning, TEXT("Player Controller PostInitializeComponents"));
+	UE_LOG(LogTemp, Log, TEXT("Player Controller PostInitializeComponents"));
 }
 
 void ASRPlayerController::OnPossess(APawn* aPawn)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Player Controller OnPossess"));
 	Super::OnPossess(aPawn);
+	UE_LOG(LogTemp, Log, TEXT("Player Controller OnPossess"));
 }
 
-void ASRPlayerController::ChangeInputMode(bool bGameMode)
+void ASRPlayerController::ChangeInputMode(bool bInputMode)
 {
-	if (bGameMode)
+	if (bInputMode)
 	{
 		SetInputMode(GameInputMode);
 		bShowMouseCursor = false;
@@ -93,6 +94,7 @@ float ASRPlayerController::GetGauge()
 	return -1.0f;
 }
 
+// When reflecting the score, the weapon ability (related to the score) is considered and reflected
 void ASRPlayerController::AddGameScore(int EarnedScore)
 {
 	int32 BonusScore = 0;
@@ -130,6 +132,7 @@ void ASRPlayerController::SubtractCurrentBullet()
 	}
 }
 
+// When reflecting TotalBullets, the weapon ability (related to the total number of bullets) is considered and reflected.
 void ASRPlayerController::AddTotalBullet(EWeaponAbilityBullet WeaponAbilityBullet)
 {
 	int32 BonusBullet = 0;
@@ -169,6 +172,7 @@ void ASRPlayerController::BeginPlay()
 	PlayerCameraManager->ViewPitchMin = -45.0f;
 	PlayerCameraManager->ViewPitchMax = 45.0f;
 
+	// Just create widgets and open it when needed
 	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
 	HuddyWidget = CreateWidget<UUserWidget>(this, HuddyWidgetClass);
 	SettingWidget = CreateWidget<USRSettingWidget>(this, SettingWidgetClass);
@@ -200,6 +204,7 @@ void ASRPlayerController::OnGamePause()
 	ChangeInputMode(false);
 }
 
+// Widget is updated after WaitTime(1.0 sec) so that the last bullet can be reflected in the score.
 void ASRPlayerController::OnGameEnd()
 {
 	CheckRankWidget = CreateWidget<USRCheckRankWidget>(this, CheckRankWidgetClass);
