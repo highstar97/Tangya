@@ -48,7 +48,6 @@ ASRBullet* ASRWeapon::ShootBullet(UWorld* World, FVector MuzzleLocation, FRotato
 		Bullet = World->SpawnActor<ASRBullet>(ASRBullet::StaticClass(), MuzzleLocation, MuzzleRotation, SpawnParams);
 		if (Bullet)
 		{
-			//Bullet->SetActorScale3D(FVector(5.0f, 5.0f, 5.0f));
 			FVector LaunchDirection = MuzzleRotation.Vector();
 			Bullet->FireInDirection(LaunchDirection);
 		}
@@ -64,7 +63,6 @@ ASREmptyBullet* ASRWeapon::ShootEmptyBullet(UWorld* World, FVector ShellEjectLoc
 		EmptyBullet = World->SpawnActor<ASREmptyBullet>(ASREmptyBullet::StaticClass(), ShellEjectLocation, ShellEjectRotation, SpawnParams);
 		if (EmptyBullet)
 		{
-			//EmptyBullet->SetActorScale3D(FVector(10.0f, 10.0f, 10.0f));
 			FVector LaunchDirection = ShellEjectRotation.Vector();
 			EmptyBullet->BounceOff(LaunchDirection);
 		}

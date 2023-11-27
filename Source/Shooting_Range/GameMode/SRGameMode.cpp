@@ -26,6 +26,7 @@ int32 ASRGameMode::GetTotalBullets()
 	return TotalBullets;
 }
 
+// A function that tells the controller the number of bullets is 0.
 void ASRGameMode::NumOfBulletIsZero(ASRPlayerController* Controller)
 {
 	ensure(nullptr != Controller);
