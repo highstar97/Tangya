@@ -1,28 +1,29 @@
 #include "SRRankingWidget.h"
-#include "RankInfoData.h"
-#include "SRSaveGame.h"
+
 #include "Components/ListView.h"
 #include "Kismet/GameplayStatics.h"
+
+#include "SRSaveGame.h"
+#include "RankInfoData.h"
 
 void USRRankingWidget::UpdateWidget()
 {
 	List_Rank->ClearListItems();
 
 	USRSaveGame* SRSaveGame = Cast<USRSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("Save1"), 0));
-	if (nullptr == SRSaveGame)
+	if (SRSaveGame == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("SaveGame Error In RankingWidget"));
 		SRSaveGame = GetMutableDefault<USRSaveGame>();
 	}
 
-	TArray<FSRRankData> Temp = SRSaveGame->GetRankArray();
-	for (int32 i = 0; i < Temp.Num(); ++i)
+	TArray<FSRRankData> Rank = SRSaveGame->GetRankArray();
+	for (int32 i = 0; i < Rank.Num(); ++i)
 	{
-		URankInfoData* RankInfoData = NewObject<URankInfoData>(this, URankInfoData::StaticClass());
-		RankInfoData->SetRank(i + 1);
-		RankInfoData->SetName(Temp[i].Name);
-		RankInfoData->SetScore(Temp[i].Score);
-		RankInfoData->SetComment(Temp[i].Comment);
-		List_Rank->AddItem(RankInfoData);
+		URankInfoData* RankInfo = NewObject<URankInfoData>(this, URankInfoData::StaticClass());
+		RankInfo->SetRank(i + 1);
+		RankInfo->SetName(Rank[i].Name);
+		RankInfo->SetScore(Rank[i].Score);
+		RankInfo->SetComment(Rank[i].Comment);
+		List_Rank->AddItem(RankInfo);
 	}
 }

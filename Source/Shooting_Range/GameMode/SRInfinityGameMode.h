@@ -1,15 +1,13 @@
 #pragma once
 
-#include "Shooting_RangeGameModeBase.h"
+#include "SRBaseGameMode.h"
 #include "SRInfinityGameMode.generated.h"
 
 UCLASS()
-class SHOOTING_RANGE_API ASRInfinityGameMode : public AShooting_RangeGameModeBase
+class SHOOTING_RANGE_API ASRInfinityGameMode : public ASRBaseGameMode
 {
 	GENERATED_BODY()
 	
 public:
 	ASRInfinityGameMode();
-
-	virtual void PostLogin(APlayerController* NewPlayer) override;
 };

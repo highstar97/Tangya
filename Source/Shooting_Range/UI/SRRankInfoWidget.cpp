@@ -1,7 +1,9 @@
 #include "SRRankInfoWidget.h"
+
+#include "Components/TextBlock.h"
+
 #include "RankInfoData.h"
 #include "SRSaveGame.h"
-#include "Components/TextBlock.h"
 
 void USRRankInfoWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {

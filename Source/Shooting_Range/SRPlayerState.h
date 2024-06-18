@@ -5,8 +5,6 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnPlayerStateChangedDelegate);
 
-class ASRPlayerController;
-
 UCLASS()
 class SHOOTING_RANGE_API ASRPlayerState : public APlayerState
 {
@@ -15,29 +13,23 @@ class SHOOTING_RANGE_API ASRPlayerState : public APlayerState
 public:
 	ASRPlayerState();
 
-	void BindPlayerController(ASRPlayerController* Controller) { PlayerController = Controller; };
+public:
+	void SetNumOfCurrentBullets(const int32 _NumOfCurrentBullets);
+	int32 GetNumOfCurrentBullets() const { return NumOfCurrentBullets; }
 
-	void AddGameScore(int32 EarnedScore);
-	int32 GetGameScore() { return GameScore; }
+	void SetNumOfTotalBullets(const int32 _NumOfTotalBullets);
+	int32 GetNumOfTotalBullets() const { return NumOfTotalBullets; }
 
-	void SetCurrentBullets(int32 NumOfBullets);
-	int32 GetCurrentBullets() { return CurrentBullets; }
+public:
+	void AddScore(const float AdditionalScore);
 
-	void SetTotalBullets(int32 NumOfBullets);
-	int32 GetTotalBullets() { return TotalBullets; }
-
+public:
 	FOnPlayerStateChangedDelegate OnPlayerStateChanged;
 
 private:
-	UPROPERTY()
-	ASRPlayerController* PlayerController;
+	UPROPERTY(VisibleAnywhere, Category = "Bullet", Transient)
+	int32 NumOfCurrentBullets;
 
-	UPROPERTY(Transient)
-	int32 GameScore;
-
-	UPROPERTY(Transient)
-	int32 CurrentBullets;
-
-	UPROPERTY(Transient)
-	int32 TotalBullets;
+	UPROPERTY(VisibleAnywhere, Category = "Bullet", Transient)
+	int32 NumOfTotalBullets;
 };

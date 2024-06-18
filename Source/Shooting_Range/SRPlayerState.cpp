@@ -1,55 +1,36 @@
 #include "SRPlayerState.h"
-#include "Shooting_RangeGameModeBase.h"
-#include "SRGameMode.h"
-#include "SRInfinityGameMode.h"
+
+#include "SRCompetitionGameMode.h"
 
 ASRPlayerState::ASRPlayerState()
 {
-	GameScore = 0;
-	CurrentBullets = 1;
-	TotalBullets = 2;
+	SetScore(0.0f);
+	NumOfCurrentBullets = -1;
+	NumOfTotalBullets = -1;
 }
 
-void ASRPlayerState::AddGameScore(int32 EarnedScore)
+void ASRPlayerState::SetNumOfCurrentBullets(const int32 _NumOfCurrentBullets)
 {
-	GameScore += EarnedScore;
+	NumOfCurrentBullets = _NumOfCurrentBullets;
+	OnPlayerStateChanged.Broadcast();
+
+	ASRCompetitionGameMode* SRGameMode = Cast<ASRCompetitionGameMode>(GetWorld()->GetAuthGameMode());
+	if (SRGameMode == nullptr || SRGameMode->GetCurrentMode() != EGameMode::Competition) return;
+
+	if (SRGameMode->IsGameEnded(NumOfCurrentBullets))
+	{
+		SRGameMode->EndGame();
+	}
+}
+
+void ASRPlayerState::SetNumOfTotalBullets(const int32 _NumOfTotalBullets)
+{
+	NumOfTotalBullets = _NumOfTotalBullets;
 	OnPlayerStateChanged.Broadcast();
 }
 
-// End when the CurrentBullets is zero
-void ASRPlayerState::SetCurrentBullets(int32 NumOfBullets)
+void ASRPlayerState::AddScore(const float AdditionalScore)
 {
-	CurrentBullets = NumOfBullets;
-	OnPlayerStateChanged.Broadcast();
-
-	auto GameMode = Cast<AShooting_RangeGameModeBase>(GetWorld()->GetAuthGameMode());
-	switch (GameMode->GetGameMode())
-	{
-	case(EGameMode::BASE):
-	{
-		break;
-	}
-	case(EGameMode::BASIC):
-	{
-		if (NumOfBullets == 0)
-		{
-			Cast<ASRGameMode>(GameMode)->NumOfBulletIsZero(PlayerController);
-		}
-		break;
-	}
-	case(EGameMode::INF):
-	{
-		break;
-	}
-	default:
-	{
-		break;
-	}
-	}
-}
-
-void ASRPlayerState::SetTotalBullets(int32 NumOfBullets)
-{
-	TotalBullets = NumOfBullets;
+	SetScore(GetScore() + AdditionalScore);
 	OnPlayerStateChanged.Broadcast();
 }

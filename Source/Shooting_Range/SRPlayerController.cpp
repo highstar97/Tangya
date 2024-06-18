@@ -1,6 +1,10 @@
 #include "SRPlayerController.h"
+
+#include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
+
 #include "SRCharacter.h"
-#include "Shooting_RangeGameModeBase.h"
+#include "SRBaseGameMode.h"
 #include "SRPlayerState.h"
 #include "SRSaveGame.h"
 #include "HUDWidget.h"
@@ -9,10 +13,7 @@
 #include "SRRankingWidget.h"
 #include "SRSelectWeaponWidget.h"
 #include "SRSettingWidget.h"
-#include "Kismet/GameplayStatics.h"
-#include "Blueprint/UserWidget.h"
 
-// PlayerController prepares Widgets to be used in advance.
 ASRPlayerController::ASRPlayerController()
 {
 	static ConstructorHelpers::FClassFinder<UHUDWidget> UI_HUD_C(TEXT("/Game/UI/UI_HUD.UI_HUD_C"));
@@ -30,7 +31,7 @@ ASRPlayerController::ASRPlayerController()
 	static ConstructorHelpers::FClassFinder<USRGamePlayWidget> UI_PAUSE_C(TEXT("/Game/UI/UI_Pause.UI_Pause_C"));
 	if (UI_PAUSE_C.Succeeded())
 	{
-		MenuWidgetClass = UI_PAUSE_C.Class;
+		PauseWidgetClass = UI_PAUSE_C.Class;
 	}
 	
 	static ConstructorHelpers::FClassFinder<USRCheckRankWidget> UI_CHECKRANK_C(TEXT("/Game/UI/UI_CheckRank.UI_CheckRank_C"));
@@ -58,47 +59,139 @@ ASRPlayerController::ASRPlayerController()
 	}
 }
 
-void ASRPlayerController::PostInitializeComponents()
+void ASRPlayerController::BeginPlay()
 {
-	Super::PostInitializeComponents();
-	UE_LOG(LogTemp, Log, TEXT("Player Controller PostInitializeComponents"));
+	Super::BeginPlay();
+
+	PlayerCameraManager->ViewPitchMin = -45.0f;
+	PlayerCameraManager->ViewPitchMax = 45.0f;
+
+	// Just create widgets and open it when needed
+	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
+	HuddyWidget = CreateWidget<UUserWidget>(this, HuddyWidgetClass);
+	PauseWidget = CreateWidget<USRGamePlayWidget>(this, PauseWidgetClass);
+	CheckRankWidget = CreateWidget<USRCheckRankWidget>(this, CheckRankWidgetClass);
+	RankingWidget = CreateWidget<USRRankingWidget>(this, RankingWidgetClass);
+	SelectWeaponWidget = CreateWidget<USRSelectWeaponWidget>(this, SelectWeaponWidgetClass);
+	SettingWidget = CreateWidget<USRSettingWidget>(this, SettingWidgetClass);
+
+	ChangeInputMode(EInputMode::GAMEONLY);
 }
 
-void ASRPlayerController::OnPossess(APawn* aPawn)
+void ASRPlayerController::SetupInputComponent()
 {
-	Super::OnPossess(aPawn);
-	UE_LOG(LogTemp, Log, TEXT("Player Controller OnPossess"));
+	Super::SetupInputComponent();
+
+	InputComponent->BindAction(TEXT("GamePause"), EInputEvent::IE_Pressed, this, &ASRPlayerController::OnGamePause);
 }
 
-void ASRPlayerController::ChangeInputMode(bool bInputMode)
+void ASRPlayerController::ToggleWidget(bool bIsNeedToTurnOn, TSubclassOf<UUserWidget> Widget)
 {
-	if (bInputMode)
+	if (!ensure(Widget != nullptr)) return;
+
+	if (Cast<USRSelectWeaponWidget>(Widget) != nullptr)
 	{
-		SetInputMode(GameInputMode);
-		bShowMouseCursor = false;
+		ToggleSelectWeaponWidget(bIsNeedToTurnOn);
 	}
 	else
 	{
-		SetInputMode(UIInputMode);
-		bShowMouseCursor = true;
+		UUserWidget* UserWidget = Cast<UUserWidget>(Widget);
+		if (!ensure(UserWidget != nullptr)) return;
+
+		bIsNeedToTurnOn == true ? UserWidget->AddToViewport() : UserWidget->RemoveFromParent();
 	}
 }
 
-float ASRPlayerController::GetGauge()
+void ASRPlayerController::ToggleHUDWidget(bool bIsNeedToTurnOn)
 {
-	if (HUDWidget)
+	if (!ensure(HUDWidget != nullptr)) return;
+
+	bIsNeedToTurnOn == true ? HUDWidget->AddToViewport() : HUDWidget->RemoveFromParent();
+}
+
+void ASRPlayerController::ToggleHuddyWidget(bool bIsNeedToTurnOn)
+{
+	if (!ensure(HuddyWidget != nullptr)) return;
+
+	bIsNeedToTurnOn == true ? HuddyWidget->AddToViewport() : HuddyWidget->RemoveFromParent();
+}
+
+void ASRPlayerController::TogglePauseWidget(bool bIsNeedToTurnOn)
+{
+	if (!ensure(PauseWidget != nullptr)) return;
+
+	bIsNeedToTurnOn == true ? PauseWidget->AddToViewport() : PauseWidget->RemoveFromParent();
+}
+
+void ASRPlayerController::ToggleCheckRankWidget(bool bIsNeedToTurnOn)
+{
+	if (!ensure(CheckRankWidget != nullptr)) return;
+
+	bIsNeedToTurnOn == true ? CheckRankWidget->AddToViewport() : CheckRankWidget->RemoveFromParent();
+}
+
+void ASRPlayerController::ToggleRankingWidget(bool bIsNeedToTurnOn)
+{
+	if (!ensure(RankingWidget != nullptr)) return;
+
+	bIsNeedToTurnOn == true ? RankingWidget->AddToViewport() : RankingWidget->RemoveFromParent();
+}
+
+void ASRPlayerController::ToggleSelectWeaponWidget(bool bIsNeedToTurnOn)
+{
+	if (!ensure(SelectWeaponWidget != nullptr)) return;
+
+	if (bIsNeedToTurnOn)
 	{
-		return HUDWidget->GetGauge();
+		SelectWeaponWidget->AddToViewport();
+		SelectWeaponWidget->UpdateWidget();
+		SetPause(true);
+		ChangeInputMode(EInputMode::UIONLY);
 	}
+	else
+	{
+		SelectWeaponWidget->RemoveFromParent();
 
-	return -1.0f;
+		SetPause(false);
+		ChangeInputMode(EInputMode::GAMEONLY);
+	}
 }
 
-// When reflecting the score, the weapon ability (related to the score) is considered and reflected
-void ASRPlayerController::AddGameScore(int EarnedScore)
+void ASRPlayerController::ToggleSettingWidget(bool bIsNeedToTurnOn)
 {
-	int32 BonusScore = 0;
-	switch (Cast<ASRCharacter>(GetCharacter())->Weapon->GetWeaponAbilityScore())
+	if (!ensure(SettingWidget != nullptr)) return;
+
+	bIsNeedToTurnOn == true ? SettingWidget->AddToViewport() : SettingWidget->RemoveFromParent();
+
+	// TODO : Make Function
+	USRSaveGame* SaveGame = Cast<USRSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("Save1"), 0));
+	if (nullptr == SaveGame)
+	{
+		SaveGame = GetMutableDefault<USRSaveGame>();
+	}
+
+	SettingWidget->UpdateSettingData(SaveGame);
+}
+
+void ASRPlayerController::OnGameEnd()
+{
+	ToggleCheckRankWidget(true);
+
+	FTimerHandle WaitHandle;
+	float WaitTime = 1.0f;	// Widget is updated after WaitTime(1.0 sec) so that the last bullet's score can be Added.
+	GetWorld()->GetTimerManager().SetTimer(WaitHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			CheckRankWidget->UpdateWidget();
+		}), WaitTime, false);
+
+	ChangeInputMode(EInputMode::UIONLY);
+}
+
+void ASRPlayerController::EarnScore(const float EarnedScore)
+{
+	float BonusScore = 0;
+
+	switch (Cast<ASRCharacter>(GetCharacter())->GetCurrentWeapon()->GetWeaponAbilityScore())
 	{
 	case(EWeaponAbilityScore::NONE):
 	{
@@ -121,186 +214,105 @@ void ASRPlayerController::AddGameScore(int EarnedScore)
 		break;
 	}
 	}
-	SRPlayerState->AddGameScore(EarnedScore + BonusScore);
+
+	ASRPlayerState* SRPlayerState = GetPlayerState<ASRPlayerState>();
+	if (!ensure(SRPlayerState != nullptr)) return;
+
+	SRPlayerState->AddScore(EarnedScore + BonusScore);
 }
 
-void ASRPlayerController::SubtractCurrentBullet()
+void ASRPlayerController::RegisterRanking()
 {
-	if (Cast<AShooting_RangeGameModeBase>(GetWorld()->GetAuthGameMode())->GetGameMode() == EGameMode::BASIC)
-	{
-		SRPlayerState->SetCurrentBullets(SRPlayerState->GetCurrentBullets() - 1);
-	}
+	if (!ensure(RankingWidget != nullptr)) return;
+
+	ToggleRankingWidget(true);
+	RankingWidget->UpdateWidget();
+	SetPause(true);
+	ChangeInputMode(EInputMode::UIONLY);
 }
 
-// When reflecting TotalBullets, the weapon ability (related to the total number of bullets) is considered and reflected.
-void ASRPlayerController::AddTotalBullet(EWeaponAbilityBullet WeaponAbilityBullet)
+void ASRPlayerController::ConsumeBullets(const int32 NumOfConsumption)
 {
-	int32 BonusBullet = 0;
+	if (Cast<ASRBaseGameMode>(GetWorld()->GetAuthGameMode())->GetCurrentMode() != EGameMode::Competition) return;
+
+	ASRPlayerState* SRPlayerState = GetPlayerState<ASRPlayerState>();
+	if (!ensure(SRPlayerState != nullptr)) return;
+
+	SRPlayerState->SetNumOfCurrentBullets(SRPlayerState->GetNumOfCurrentBullets() - NumOfConsumption);
+}
+
+void ASRPlayerController::AddBonusBulletsByAbility(EWeaponAbilityBullet WeaponAbilityBullet)
+{
+	int32 BonusBullets = 0;
 	switch (WeaponAbilityBullet)
 	{
 	case(EWeaponAbilityBullet::NONE):
 	{
-		BonusBullet = 0;
+		BonusBullets = 0;
 		break;
 	}
 	case(EWeaponAbilityBullet::ADD3):
 	{
-		BonusBullet = 3;
+		BonusBullets = 3;
 		break;
 	}
 	case(EWeaponAbilityBullet::SUBTRACT3):
 	{
-		BonusBullet = -3;
+		BonusBullets = -3;
 		break;
 	}
 	default:
 	{
-		BonusBullet = 0;
+		BonusBullets = 0;
 		break;
 	}
 	}
-	SRPlayerState->SetTotalBullets(SRPlayerState->GetTotalBullets() + BonusBullet);
-	SRPlayerState->SetCurrentBullets(SRPlayerState->GetTotalBullets());
+
+	ASRPlayerState* SRPlayerState = GetPlayerState<ASRPlayerState>();
+	if (!ensure(SRPlayerState != nullptr)) return;
+
+	SRPlayerState->SetNumOfTotalBullets(SRPlayerState->GetNumOfTotalBullets() + BonusBullets);
+	SRPlayerState->SetNumOfCurrentBullets(SRPlayerState->GetNumOfTotalBullets());
 }
 
-void ASRPlayerController::BeginPlay()
+void ASRPlayerController::ChangeInputMode(EInputMode InputMode)
 {
-	Super::BeginPlay();
-
-	ChangeInputMode(true);
-
-	PlayerCameraManager->ViewPitchMin = -45.0f;
-	PlayerCameraManager->ViewPitchMax = 45.0f;
-
-	// Just create widgets and open it when needed
-	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
-	HuddyWidget = CreateWidget<UUserWidget>(this, HuddyWidgetClass);
-	SettingWidget = CreateWidget<USRSettingWidget>(this, SettingWidgetClass);
-
-	SRPlayerState = Cast<ASRPlayerState>(PlayerState);
-	if (nullptr != SRPlayerState)
+	switch (InputMode)
 	{
-		SRPlayerState->BindPlayerController(this);
-		HUDWidget->BindPlayerState(SRPlayerState);
-		SRPlayerState->SetTotalBullets(Cast<AShooting_RangeGameModeBase>(GetWorld()->GetAuthGameMode())->GetTotalBullets());
-		SRPlayerState->SetCurrentBullets(SRPlayerState->GetTotalBullets());
-		SRPlayerState->OnPlayerStateChanged.Broadcast();
+	case EInputMode::BASE:
+		break;
+	case EInputMode::GAMEANDUI:
+		break;
+	case EInputMode::GAMEONLY:
+	{
+		SetInputMode(FInputModeGameOnly());
+		bShowMouseCursor = false;
+		break;
+	}
+	case EInputMode::UIONLY:
+	{
+		SetInputMode(FInputModeUIOnly());
+		bShowMouseCursor = true;
+		break;
+	}
 	}
 }
 
-void ASRPlayerController::SetupInputComponent()
+float ASRPlayerController::GetGauge() const
 {
-	Super::SetupInputComponent();
-	InputComponent->BindAction(TEXT("GamePause"), EInputEvent::IE_Pressed, this, &ASRPlayerController::OnGamePause);
-}
-
-void ASRPlayerController::OnGamePause()
-{
-	MenuWidget = CreateWidget<USRGamePlayWidget>(this, MenuWidgetClass);
-	ensure(nullptr != MenuWidget);
-	MenuWidget->AddToViewport(3);
-
-	SetPause(true);
-	ChangeInputMode(false);
-}
-
-// Widget is updated after WaitTime(1.0 sec) so that the last bullet can be reflected in the score.
-void ASRPlayerController::OnGameEnd()
-{
-	CheckRankWidget = CreateWidget<USRCheckRankWidget>(this, CheckRankWidgetClass);
-	ensure(nullptr != CheckRankWidget);
-	CheckRankWidget->AddToViewport();
-	FTimerHandle WaitHandle;
-	float WaitTime = 1.0f;
-	GetWorld()->GetTimerManager().SetTimer(WaitHandle, FTimerDelegate::CreateLambda([&]()
-		{
-
-			CheckRankWidget->UpdateWidget();
-
-		}), WaitTime, false);
-
-	//SetPause(true);
-	ChangeInputMode(false);
-}
-
-void ASRPlayerController::TurnOnHUDWidget()
-{
-	ensure(nullptr != HUDWidget);
-	HUDWidget->AddToViewport();
-}
-
-void ASRPlayerController::TurnOffHUDWidget()
-{
-	ensure(nullptr != HUDWidget);
-	HUDWidget->RemoveFromParent();
-}
-
-void ASRPlayerController::TurnOnHuddyWidget()
-{
-	ensure(nullptr != HuddyWidget);
-	HuddyWidget->AddToViewport();
-}
-
-void ASRPlayerController::TurnOffHuddyWidget()
-{
-	ensure(nullptr != HuddyWidget);
-	HuddyWidget->RemoveFromParent();
-}
-
-void ASRPlayerController::TurnOnRankingWidget()
-{
-	RankingWidget = CreateWidget<USRRankingWidget>(this, RankingWidgetClass);
-	ensure(nullptr != RankingWidget);
-	RankingWidget->AddToViewport();
-	RankingWidget->UpdateWidget();
-
-	SetPause(true);
-	ChangeInputMode(false);
-}
-
-void ASRPlayerController::TurnOnSelectWeaponWidget()
-{
-	SelectWeaponWidget = CreateWidget<USRSelectWeaponWidget>(this, SelectWeaponWidgetClass);
-	ensure(nullptr != SelectWeaponWidget);
-	SelectWeaponWidget->AddToViewport();
-	SelectWeaponWidget->UpdateWidget();
-
-	SetPause(true);
-	ChangeInputMode(false);
-}
-
-void ASRPlayerController::TurnOffSelectWeaponWidget()
-{
-	ensure(nullptr != SelectWeaponWidget);
-	SelectWeaponWidget->RemoveFromParent();
-
-	SetPause(false);
-	ChangeInputMode(true);
-}
-
-void ASRPlayerController::TurnOnSettingWidget()
-{
-	if (!SettingWidget)
+	if (HUDWidget)
 	{
-		SettingWidget = CreateWidget<USRSettingWidget>(this, SettingWidgetClass);
-	}
-	ensure(nullptr != SettingWidget);
-	USRSaveGame* SaveGame = Cast<USRSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("Save1"), 0));
-	if (nullptr == SaveGame)
-	{
-		SaveGame = GetMutableDefault<USRSaveGame>();
+		return HUDWidget->GetCurrentGauge();
 	}
 
-	SettingWidget->UpdateSettingData(SaveGame);
-
-	SettingWidget->AddToViewport();
+	return -1.0f;
 }
 
 void ASRPlayerController::ChangebGauging(bool NewBoolean)
 {
 	if (HUDWidget)
 	{
-		HUDWidget->SetbGauging(NewBoolean);
+		HUDWidget->SetbIsGauging(NewBoolean);
 	}
 }
 
@@ -308,7 +320,23 @@ void ASRPlayerController::ChangeGauge(float NewGauge)
 {
 	if (HUDWidget)
 	{
-		HUDWidget->SetGauge(NewGauge);
+		HUDWidget->SetCurrentGauge(NewGauge);
 		HUDWidget->UpdateTimingCatcher();
+	}
+}
+
+void ASRPlayerController::OnGamePause()
+{
+	if (PauseWidget->IsInViewport())
+	{
+		TogglePauseWidget(false);
+		SetPause(false);
+		ChangeInputMode(EInputMode::GAMEONLY);
+	}
+	else
+	{
+		TogglePauseWidget(true);
+		SetPause(true);
+		ChangeInputMode(EInputMode::UIONLY);
 	}
 }

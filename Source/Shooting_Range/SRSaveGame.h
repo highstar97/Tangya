@@ -12,7 +12,7 @@ public:
 	FString Name;
 
 	UPROPERTY()
-	int32 Score;
+	float Score;
 
 	UPROPERTY()
 	FString Comment;
@@ -46,6 +46,7 @@ class SHOOTING_RANGE_API USRSaveGame : public USaveGame
 public:
 	USRSaveGame();
 
+public:
 	void AddRankData(FSRRankData RankData);
 
 	void UpdateSettingData(float NewSound, float NewLight, float NewMouseSensitivity);

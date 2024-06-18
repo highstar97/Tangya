@@ -1,13 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "Blueprint/UserWidget.h"
 #include "SRGamePlayWidget.generated.h"
 
-/**
- * 
- */
+class UButton;
+
 UCLASS()
 class SHOOTING_RANGE_API USRGamePlayWidget : public UUserWidget
 {
@@ -22,11 +19,16 @@ protected:
 	UFUNCTION()
 	void OnReturnToTitleClicked();
 
-protected:
-	UPROPERTY()
-	class UButton* ResumeButton;
+	UFUNCTION()
+	void OnSettingClicked();
 
-	UPROPERTY()
-	class UButton* ReturnToTitleButton;
+private:
+	UPROPERTY(meta = (BindWidget))
+	UButton* Button_Resume;
 
+	UPROPERTY(meta = (BindWidget))
+	UButton* Button_ReturnToTitle;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Button_Setting;
 };

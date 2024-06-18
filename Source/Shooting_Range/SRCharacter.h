@@ -8,12 +8,14 @@ class UCameraComponent;
 class USRAnimInstance;
 class ASRWeapon;
 
+UENUM()
 enum class EControlView
 {
 	FirstPersonView,
 	ThirdPersonView,
 };
 
+UENUM()
 enum class EMovementState
 {
 	Idle,
@@ -28,23 +30,43 @@ class SHOOTING_RANGE_API ASRCharacter : public ACharacter
 public:
 	ASRCharacter();
 
-protected:
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual void PostInitializeComponents() override;
+
 	virtual void BeginPlay() override;
 
 public:
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void PostInitializeComponents() override;
+	USpringArmComponent* GetSpringArm() const { return SpringArm; }
+
+	UCameraComponent* GetCamera() const { return Camera; }
+
+	UCameraComponent* GetADSCamera() const { return ADSCamera; }
+
+	EControlView GetCurrentControlView() const { return CurrentControlView; }
+
+	USRAnimInstance* GetSRAnim() const { return SRAnim; }
+
+	int32 GetAimingAngle() const { return AimingAngle; }
+
+	ASRWeapon* GetCurrentWeapon() const { return CurrentWeapon; }
 
 private:
-	void Jump();
-	void Crouch();
-
+// Movement
 	void MoveForward(float NewAxisValue);
+
 	void MoveRight(float NewAxisValue);
+
 	void LookUp(float NewAxisValue);
+
 	void TurnRight(float NewAxisValue);
 
+	void Jump();
+
+	void Crouch();
+
 	void ChangeControlView();
+
 	void SetControlMode(EControlView NewControlView);
 
 	void ChangeMovementState(EMovementState NewState);
@@ -64,24 +86,25 @@ private:
 	UFUNCTION()
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
-public:
-	UPROPERTY(VisibleAnywhere, Category = Camera)
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	USpringArmComponent* SpringArm;
 
-	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	UCameraComponent* Camera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	UCameraComponent* ADSCamera;
 
-	EControlView CurrentControlView = EControlView::ThirdPersonView;
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	EControlView CurrentControlView;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = "Animation")
 	USRAnimInstance* SRAnim;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
-	ASRWeapon* Weapon;
-
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	int32 AimingAngle;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	ASRWeapon* CurrentWeapon;
 };

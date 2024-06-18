@@ -13,13 +13,16 @@ class SHOOTING_RANGE_API UHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void BindPlayerState(ASRPlayerState* PlayerState);
+	UHUDWidget(const FObjectInitializer& ObjectInitializer);
 
-	void SetbGauging(bool NewBoolean) { bGauging = NewBoolean; };
+public:
+	void SetbIsGauging(const bool _bIsGauging) { bIsGauging = _bIsGauging; };
 
-	float GetGauge() { return Gauge; };
-	void SetGauge(float NewGauge) { Gauge = NewGauge; }
+	float GetCurrentGauge() const { return CurrentGauge; };
 
+	void SetCurrentGauge(const float _NewGauge) { CurrentGauge = _NewGauge; }
+
+public:
 	void UpdateTimingCatcher();
 
 protected:
@@ -27,13 +30,23 @@ protected:
 
 	virtual void NativeConstruct() override;
 
+private:
 	void UpdatePlayerState();
 
-private:
 	void AddGauge(float InDeltaTime);
-	float GetGaugeRatio();
+
+	float GetCurrentGaugeRatio();
 
 private:
+	UPROPERTY(VisibleAnywhere, Category = "Gauge")
+	bool bIsGauging;
+
+	UPROPERTY(EditAnywhere, Category = "Gauge")
+	float ChargingSpeed;
+
+	UPROPERTY(VisibleAnywhere, Category = "Gauge")
+	float CurrentGauge;
+
 	TWeakObjectPtr<ASRPlayerState> CurrentPlayerState;
 
 	UPROPERTY(meta = (BindWidget))
@@ -50,11 +63,4 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* TimingCatcher;
-
-	UPROPERTY(VisibleAnywhere)
-	float Gauge;
-
-	bool bGauging;
-
-
 };

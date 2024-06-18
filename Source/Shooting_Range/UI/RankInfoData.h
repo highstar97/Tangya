@@ -11,28 +11,28 @@ class SHOOTING_RANGE_API URankInfoData : public UObject
 public:
 	URankInfoData();
 
-	void SetRank(int32 NewRank) { Rank = NewRank; }
-	int32 GetRank() { return Rank; }
+	void SetRank(const int32 NewRank) { Rank = NewRank; }
+	int32 GetRank() const { return Rank; }
 
-	void SetName(FString NewName) { Name = NewName; }
-	FString GetName() { return Name; }
+	void SetName(const FString& NewName) { Name = NewName; }
+	FString GetName() const { return Name; }
 
-	void SetScore(int32 NewScore) { Score = NewScore; }
-	int32 GetScore() { return Score; }
+	void SetScore(const int32 NewScore) { Score = NewScore; }
+	int32 GetScore() const { return Score; }
 
-	void SetComment(FString NewComment) { Comment = NewComment; }
-	FString GetComment() { return Comment; }
+	void SetComment(const FString& NewComment) { Comment = NewComment; }
+	FString GetComment() const { return Comment; }
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	int32 Rank;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	FString Name;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	int32 Score;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	FString Comment;
 };

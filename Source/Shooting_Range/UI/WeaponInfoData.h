@@ -11,22 +11,25 @@ class SHOOTING_RANGE_API UWeaponInfoData : public UObject
 public:
 	UWeaponInfoData();
 
-	UTexture2D* GetImage() { return Image; }
+	UTexture2D* GetImage() const { return Image; }
+
 	void SetImage(UTexture2D* NewImage) { Image = NewImage; }
 	
-	FString GetName() { return Name; }
-	void SetName(FString NewName) { Name = NewName; }
+	FString GetName() const { return Name; }
 
-	FString GetAbility() { return Ability; }
-	void SetAbility(FString NewAbilty) { Ability = NewAbilty; }
+	void SetName(const FString& NewName) { Name = NewName; }
+
+	FString GetAbility() const { return Ability; }
+
+	void SetAbility(const FString& NewAbilty) { Ability = NewAbilty; }
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	UTexture2D* Image;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	FString Name;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	FString Ability;
 };

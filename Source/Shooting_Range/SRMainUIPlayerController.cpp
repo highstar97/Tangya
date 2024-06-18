@@ -1,22 +1,36 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SRMainUIPlayerController.h"
+
 #include "Blueprint/UserWidget.h"
+
+ASRMainUIPlayerController::ASRMainUIPlayerController()
+{
+	static ConstructorHelpers::FClassFinder<UUserWidget> UI_MAIN_C(TEXT("/Game/UI/UI_Main.UI_Main_C"));
+	if (UI_MAIN_C.Succeeded())
+	{
+		MainWidgetClass = UI_MAIN_C.Class;
+	}
+}
 
 void ASRMainUIPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ensure(nullptr != UIWidgetClass);
+	if (!ensure(MainWidgetClass != nullptr)) return;
 
-	UIWidgetInstance = CreateWidget<UUserWidget>(this, UIWidgetClass);
-	ensure(nullptr != UIWidgetInstance);
+	MainWidget = CreateWidget<UUserWidget>(this, MainWidgetClass);
+	if (!ensure(MainWidget != nullptr)) return;
 
-	UIWidgetInstance->AddToViewport();
+	ToggleMainWidget(true);
 
 	FInputModeUIOnly Mode;
-	Mode.SetWidgetToFocus(UIWidgetInstance->GetCachedWidget());
+	Mode.SetWidgetToFocus(MainWidget->GetCachedWidget());
 	SetInputMode(Mode);
 	bShowMouseCursor = true;
+}
+
+void ASRMainUIPlayerController::ToggleMainWidget(bool bIsNeedToTurnOn)
+{
+	if (!ensure(MainWidget != nullptr)) return;
+
+	bIsNeedToTurnOn == true ? MainWidget->AddToViewport() : MainWidget->RemoveFromParent();
 }

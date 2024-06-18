@@ -5,7 +5,7 @@ USRAnimInstance::USRAnimInstance()
 	bIsAttacking = false;
 	bZoomIn = false;
 	bCanJump = true;
-	bCrouching = false;
+	bIsCrouching = false;
 	bIsEquiping = false;
 	Speed = 0.0f;
 	Direction = 0.0f;
@@ -52,40 +52,9 @@ void USRAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void USRAnimInstance::SetbIsAttacking(bool boolean)
-{
-	bIsAttacking = boolean;
-}
-
-void USRAnimInstance::SetbCanJump(bool boolean)
-{
-	bCanJump = boolean;
-}
-
-void USRAnimInstance::SetbCrouching(bool boolean)
-{
-	bCrouching = boolean;
-}
-
-void USRAnimInstance::SetbIsEquiping(bool boolean)
-{
-	bIsEquiping = boolean;
-}
-
-void USRAnimInstance::ChangebZoomIn()
-{
-	bZoomIn = !bZoomIn;
-}
-
 void USRAnimInstance::PlayAttackMontage()
 {
 	bIsAttacking = true;
-	if (bZoomIn)
-	{
-		Montage_Play(Ironsight_AttackMontage, 5.0f);
-	}
-	else
-	{
-		Montage_Play(AttackMontage, 5.0f);
-	}
+
+	bZoomIn == true ? Montage_Play(Ironsight_AttackMontage, 5.0f) : Montage_Play(AttackMontage, 5.0f);
 }

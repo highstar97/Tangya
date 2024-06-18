@@ -1,24 +1,28 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "GameFramework/PlayerController.h"
 #include "SRMainUIPlayerController.generated.h"
 
-/**
- * 
- */
+class UUserWidget;
+
 UCLASS()
 class SHOOTING_RANGE_API ASRMainUIPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
+public:
+	ASRMainUIPlayerController();
+
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadwrite, Category = UI)
-	TSubclassOf<class UUserWidget> UIWidgetClass;
+private:
+	void ToggleMainWidget(bool bIsNeedToTurnOn);
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> MainWidgetClass;
 
 	UPROPERTY()
-	class UUserWidget* UIWidgetInstance;
+	UUserWidget* MainWidget;
 };

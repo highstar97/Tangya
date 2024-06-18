@@ -1,10 +1,5 @@
 #include "SRCharacter.h"
-#include "SRPlayerController.h"
-#include "SRAnimInstance.h"
-#include "SRWeapon.h"
-#include "KA47_X.h"
-#include "AR4_X.h"
-#include "KA74U_X.h"
+
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
@@ -12,6 +7,14 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Gameframework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+
+#include "SRPlayerState.h"
+#include "SRPlayerController.h"
+#include "SRAnimInstance.h"
+#include "SRWeapon.h"
+#include "KA47_X.h"
+#include "AR4_X.h"
+#include "KA74U_X.h"
 
 ASRCharacter::ASRCharacter()
 {
@@ -52,23 +55,17 @@ ASRCharacter::ASRCharacter()
 	}
 
 	SetControlMode(EControlView::ThirdPersonView);
-	Weapon = CreateDefaultSubobject<ASRWeapon>(TEXT("WEAPON"));
+	CurrentWeapon = CreateDefaultSubobject<ASRWeapon>(TEXT("WEAPON"));
 	ADSCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("ADSCAMERA"));
 
 	AimingAngle = 0.0f;
 }
 
-void ASRCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
 void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
-	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed ,this, &ASRCharacter::Jump);
+
+	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ASRCharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Crouch"), EInputEvent::IE_Pressed, this, &ASRCharacter::Crouch);
 	PlayerInputComponent->BindAction(TEXT("ChangeControlView"), EInputEvent::IE_Pressed, this, &ASRCharacter::ChangeControlView);
 	PlayerInputComponent->BindAction(TEXT("ZoomIn"), EInputEvent::IE_Pressed, this, &ASRCharacter::ZoomIn);
@@ -79,7 +76,7 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ASRCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &ASRCharacter::MoveRight);
-	
+
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &ASRCharacter::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("TurnRight"), this, &ASRCharacter::TurnRight);
 }
@@ -87,40 +84,22 @@ void ASRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void ASRCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	
 	SRAnim = Cast<USRAnimInstance>(GetMesh()->GetAnimInstance());
-	if (nullptr == SRAnim)
-	{
-		UE_LOG(LogTemp, Error, TEXT("SRAnim is nullptr"));
-	}
-	else
-	{
-		SRAnim->OnMontageEnded.AddDynamic(this, &ASRCharacter::OnAttackMontageEnded);
-	}
+	if (!ensure(SRAnim != nullptr)) return;
+
+	SRAnim->OnMontageEnded.AddDynamic(this, &ASRCharacter::OnAttackMontageEnded);
 }
 
-void ASRCharacter::Jump()
+void ASRCharacter::BeginPlay()
 {
-	// The character cannot jump while crouching
-	if (true == SRAnim->GetbCanJump() && false == SRAnim->GetbCrouching())
-	{
-		SRAnim->SetbCanJump(false);
-		bPressedJump = true;
-		JumpKeyHoldTime = 0.0f;
-	}
-}
+	Super::BeginPlay();
 
-void ASRCharacter::Crouch()
-{
-	if (SRAnim->GetbCrouching())
-	{
-		SRAnim->SetbCrouching(false);
-		ChangeMovementState(EMovementState::Idle);
-	}
-	else
-	{
-		SRAnim->SetbCrouching(true);
-		ChangeMovementState(EMovementState::Crouching);
-	}
+	ASRPlayerState* SRPlayerState = GetPlayerState<ASRPlayerState>();
+	if (!ensure(SRPlayerState != nullptr)) return;
+
+	const int32 BasicNumOfBullets = 10;
+	SRPlayerState->SetNumOfTotalBullets(BasicNumOfBullets);
 }
 
 void ASRCharacter::MoveForward(float NewAxisValue)
@@ -162,6 +141,31 @@ void ASRCharacter::TurnRight(float NewAxisValue)
 	{
 		APlayerController* const PlayerController = CastChecked<APlayerController>(Controller);
 		PlayerController->AddYawInput(NewAxisValue);
+	}
+}
+
+void ASRCharacter::Jump()
+{
+	// The character cannot jump while crouching
+	if (true == SRAnim->GetbCanJump() && false == SRAnim->GetbIsCrouching())
+	{
+		SRAnim->SetbCanJump(false);
+		bPressedJump = true;
+		JumpKeyHoldTime = 0.0f;
+	}
+}
+
+void ASRCharacter::Crouch()
+{
+	if (SRAnim->GetbIsCrouching())
+	{
+		SRAnim->SetbIsCrouching(false);
+		ChangeMovementState(EMovementState::Idle);
+	}
+	else
+	{
+		SRAnim->SetbIsCrouching(true);
+		ChangeMovementState(EMovementState::Crouching);
 	}
 }
 
@@ -251,7 +255,7 @@ void ASRCharacter::ZoomIn()
 {
 	if (nullptr != SRAnim)
 	{
-		SRAnim->ChangebZoomIn();
+		SRAnim->ToggleZoomIn();
 		if (SRAnim->GetbIsEquiping())
 		{
 			if (SRAnim->GetbZoomIn())
@@ -295,28 +299,25 @@ void ASRCharacter::ClickDown()
 
 void ASRCharacter::EquipWeapon(ASRWeapon* NewWeapon)
 {
-	if (nullptr == NewWeapon)
+	if (!ensure(NewWeapon != nullptr)) return;
+
+	if (IsValid(CurrentWeapon))
 	{
-		return;
+		CurrentWeapon->Destroy();
 	}
 
-	if (IsValid(Weapon))
-	{
-		Weapon->Destroy();
-	}
-
-	Weapon = NewWeapon;
+	CurrentWeapon = NewWeapon;
 
 	FName WeaponSocket(TEXT("hand_rSocket"));
 	if (GetMesh()->DoesSocketExist(WeaponSocket))
 	{
-		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
+		CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponSocket);
 	}
 
 	FName ADSCameraSocket(TEXT("ADS_Socket"));
-	if (Weapon->GetMesh()->DoesSocketExist(ADSCameraSocket))
+	if (CurrentWeapon->GetMesh()->DoesSocketExist(ADSCameraSocket))
 	{
-		ADSCamera->AttachToComponent(Weapon->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ADSCameraSocket);
+		ADSCamera->AttachToComponent(CurrentWeapon->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, ADSCameraSocket);
 		ADSCamera->SetRelativeRotation(FRotator(90.0f, 0.0f, -90.0f));
 		ADSCamera->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
 	}
@@ -324,15 +325,15 @@ void ASRCharacter::EquipWeapon(ASRWeapon* NewWeapon)
 	ASRPlayerController* SRPlayerController = Cast<ASRPlayerController>(GetController());
 	if (SRPlayerController)
 	{
-		SRPlayerController->TurnOffSelectWeaponWidget();
+		SRPlayerController->ToggleSelectWeaponWidget(false);
 		if (!SRAnim->GetbIsEquiping())
 		{
-			SRPlayerController->TurnOnHUDWidget();
-			SRPlayerController->TurnOnHuddyWidget();
+			SRPlayerController->ToggleHUDWidget(true);
+			SRPlayerController->ToggleHuddyWidget(true);
 		}
 	}
 
-	SRPlayerController->AddTotalBullet(Weapon->GetWeaponAbilityBullet());
+	SRPlayerController->AddBonusBulletsByAbility(CurrentWeapon->GetWeaponAbilityBullet());
 	SRAnim->SetbIsEquiping(true);
 }
 
@@ -348,7 +349,7 @@ void ASRCharacter::Fire()
 	{
 		return;
 	}
-	if (SRAnim->GetbCrouching() || !SRAnim->GetbIsEquiping())
+	if (SRAnim->GetbIsCrouching() || !SRAnim->GetbIsEquiping())
 	{
 		return;
 	}
@@ -378,7 +379,7 @@ void ASRCharacter::Fire()
 			FireRotation = CameraRotation;
 		}
 		FName ShellEjectSocket(TEXT("ShellEject"));
-		FVector ShellEjectLocation = Weapon->GetMesh()->GetSocketLocation(ShellEjectSocket);
+		FVector ShellEjectLocation = CurrentWeapon->GetMesh()->GetSocketLocation(ShellEjectSocket);
 		FRotator ShellEjectRotation = CameraRotation;
 
 		UWorld* World = GetWorld();
@@ -391,7 +392,7 @@ void ASRCharacter::Fire()
 			
 			// If the gauge control fails, the direction of the bullet will randomly bounce
 			ApplyBulletAccuracy(SRPlayerController->GetGauge(), FireRotation);
-			ASRBullet* Bullet = Weapon->ShootBullet(World, FireLocation, FireRotation, SpawnParams);
+			ASRBullet* Bullet = CurrentWeapon->ShootBullet(World, FireLocation, FireRotation, SpawnParams);
 			if(Bullet)
 			{
 				float Roll = 0.0f;
@@ -401,19 +402,19 @@ void ASRCharacter::Fire()
 				SRPlayerController->SetControlRotation(GetControlRotation() + RandRotation);
 			}
 
-			ASREmptyBullet* EmptyBullet = Weapon->ShootEmptyBullet(World, ShellEjectLocation, ShellEjectRotation, SpawnParams);
+			ASREmptyBullet* EmptyBullet = CurrentWeapon->ShootEmptyBullet(World, ShellEjectLocation, ShellEjectRotation, SpawnParams);
 		}
 
 		SRAnim->PlayAttackMontage();
 		
 		// Add Particles to Muzzle and Add Sound
 		FName MuzzleSocket(TEXT("Muzzle"));
-		UGameplayStatics::SpawnEmitterAttached(Weapon->GetMuzzleParticle(), Weapon->GetMesh(), MuzzleSocket);
-		UGameplayStatics::SpawnEmitterAttached(Weapon->GetBulletTrailParticle(), Weapon->GetMesh(), MuzzleSocket);
+		UGameplayStatics::SpawnEmitterAttached(CurrentWeapon->GetMuzzleParticle(), CurrentWeapon->GetMesh(), MuzzleSocket);
+		UGameplayStatics::SpawnEmitterAttached(CurrentWeapon->GetBulletTrailParticle(), CurrentWeapon->GetMesh(), MuzzleSocket);
 
-		UGameplayStatics::PlaySound2D(World, Weapon->GetAttackSound());
+		UGameplayStatics::PlaySound2D(World, CurrentWeapon->GetAttackSound());
 
-		SRPlayerController->SubtractCurrentBullet();
+		SRPlayerController->ConsumeBullets(1);
 		SRPlayerController->ChangebGauging(false);
 	}
 }
@@ -439,7 +440,7 @@ void ASRCharacter::ApplyBulletAccuracy(float Gauge, FRotator& FireRotation)
 	const float MaxUnder80 = 0.7f;
 	if (Gauge == -1.0f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Gauge Error"));
+		UE_LOG(LogTemp, Warning, TEXT("CurrentGauge Error"));
 	}
 
 	if (Gauge < 50.0f)

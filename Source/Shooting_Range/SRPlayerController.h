@@ -12,6 +12,15 @@ class USRSelectWeaponWidget;
 class USRSettingWidget;
 class ASRPlayerState;
 
+UENUM(BlueprintType)
+enum class EInputMode : uint8
+{
+	BASE,
+	GAMEANDUI,
+	GAMEONLY,
+	UIONLY
+};
+
 UCLASS()
 class SHOOTING_RANGE_API ASRPlayerController : public APlayerController
 {
@@ -19,98 +28,91 @@ class SHOOTING_RANGE_API ASRPlayerController : public APlayerController
 
 public:
 	ASRPlayerController();
-	
-	virtual void PostInitializeComponents() override;
-	virtual void OnPossess(APawn* aPawn) override;
 
-	UFUNCTION(BlueprintCallable)
-	void ChangeInputMode(bool bInputMode = true);
-
-	ASRPlayerState* GetPlayerState() { return SRPlayerState; };
-	float GetGauge();
-
-	UFUNCTION(BlueprintCallable)
-	void AddGameScore(int32 EarnedScore);
-
-	void SubtractCurrentBullet();
-
-	void AddTotalBullet(EWeaponAbilityBullet WeaponAbilityBullet);
-
-	void OnGameEnd();
-
-	void TurnOnHUDWidget();
-	void TurnOffHUDWidget();
-
-	void TurnOnHuddyWidget();
-	void TurnOffHuddyWidget();
-
-	void TurnOnRankingWidget();
-
-	UFUNCTION(BlueprintCallable)
-	void TurnOnSelectWeaponWidget();
-	void TurnOffSelectWeaponWidget();
-
-	UFUNCTION(BlueprintCallable)
-	void TurnOnSettingWidget();
-
-	void ChangebGauging(bool NewBoolean);
-	void ChangeGauge(float NewGauge);
-
-protected:
 	virtual void BeginPlay() override;
 
 	virtual void SetupInputComponent() override;
 
+public:
+	void ToggleWidget(bool bIsNeedToTurnOn, TSubclassOf<UUserWidget> Widget);
+
+	void ToggleHUDWidget(bool bIsNeedToTurnOn);
+
+	void ToggleHuddyWidget(bool bIsNeedToTurnOn);
+
+	void TogglePauseWidget(bool bIsNeedToTurnOn);
+
+	void ToggleCheckRankWidget(bool bIsNeedToTurnOn);
+
+	void ToggleRankingWidget(bool bIsNeedToTurnOn);
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleSelectWeaponWidget(bool bIsNeedToTurnOn);
+
+	void ToggleSettingWidget(bool bIsNeedToTurnOn);
+
+public:
+	void OnGameEnd();
+	
+	UFUNCTION(BlueprintCallable)
+	void EarnScore(const float EarnedScore);
+
+	void RegisterRanking();
+
+	void ConsumeBullets(const int32 NumOfConsumption);
+
+	void AddBonusBulletsByAbility(EWeaponAbilityBullet WeaponAbilityBullet);
+
+	UFUNCTION(BlueprintCallable)
+	void ChangeInputMode(EInputMode InputMode);
+
+	float GetGauge() const;
+	void ChangebGauging(bool NewBoolean);
+	void ChangeGauge(float NewGauge);
+
 private:
 	void OnGamePause();
 
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "UI.HUD")
 	TSubclassOf<UHUDWidget> HUDWidgetClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
-	TSubclassOf<UUserWidget> HuddyWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
-	TSubclassOf<USRGamePlayWidget> MenuWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
-	TSubclassOf<USRCheckRankWidget> CheckRankWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
-	TSubclassOf<USRRankingWidget> RankingWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
-	TSubclassOf<USRSelectWeaponWidget> SelectWeaponWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = UI)
-	TSubclassOf<USRSettingWidget> SettingWidgetClass;
-
-private:
-	UPROPERTY()
-	ASRPlayerState* SRPlayerState;
-	 
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly, Category = "UI.HUD")
 	UHUDWidget* HUDWidget;
 
-	UPROPERTY()
+	UPROPERTY(EditInstanceOnly, Category = "UI.Huddy")
+	TSubclassOf<UUserWidget> HuddyWidgetClass;
+
+	UPROPERTY(VisibleInstanceOnly, Category = "UI.Huddy")
 	UUserWidget* HuddyWidget;
 
-	UPROPERTY()
-	USRGamePlayWidget* MenuWidget;
+	UPROPERTY(EditDefaultsOnly, Category = "UI.Pause")
+	TSubclassOf<USRGamePlayWidget> PauseWidgetClass;
 
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly, Category = "UI.Pause")
+	USRGamePlayWidget* PauseWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI.Rank")
+	TSubclassOf<USRCheckRankWidget> CheckRankWidgetClass;
+
+	UPROPERTY(VisibleInstanceOnly, Category = "UI.Rank")
 	USRCheckRankWidget* CheckRankWidget;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, Category = "UI.Rank")
+	TSubclassOf<USRRankingWidget> RankingWidgetClass;
+
+	UPROPERTY(VisibleInstanceOnly, Category = "UI.Rank")
 	USRRankingWidget* RankingWidget;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, Category = "UI.WeaponSelect")
+	TSubclassOf<USRSelectWeaponWidget> SelectWeaponWidgetClass;
+
+	UPROPERTY(VisibleInstanceOnly, Category = "UI.WeaponSelect")
 	USRSelectWeaponWidget* SelectWeaponWidget;
 
-	UPROPERTY()
-	USRSettingWidget* SettingWidget;
+	UPROPERTY(EditDefaultsOnly, Category = "UI.Setting")
+	TSubclassOf<USRSettingWidget> SettingWidgetClass;
 
-	FInputModeGameOnly GameInputMode;
-	FInputModeUIOnly UIInputMode;
+	UPROPERTY(VisibleInstanceOnly, Category = "UI.Setting")
+	USRSettingWidget* SettingWidget;
 };

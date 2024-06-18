@@ -10,24 +10,28 @@ class SHOOTING_RANGE_API USRAnimInstance : public UAnimInstance
 
 public:
 	USRAnimInstance();
+
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	
-	bool GetbZoomIn() { return bZoomIn; }
-	bool GetbIsAttacking() { return bIsAttacking; }
-	void SetbIsAttacking(bool boolean);
+public:
+	bool GetbZoomIn() const { return bZoomIn; }
+	
+	bool GetbIsAttacking() const { return bIsAttacking; }
+	void SetbIsAttacking(const bool _bIsAttacking) { bIsAttacking = _bIsAttacking; }
 
-	bool GetbCanJump() { return bCanJump; }
-	void SetbCanJump(bool boolean);
+	bool GetbCanJump() const { return bCanJump; }
+	void SetbCanJump(const bool _bCanJump) { bCanJump = _bCanJump; }
 
-	bool GetbCrouching() { return bCrouching; }
-	void SetbCrouching(bool boolean);
+	bool GetbIsCrouching() const { return bIsCrouching; }
+	void SetbIsCrouching(const bool _bIsCrouching) { bIsCrouching = _bIsCrouching; }
 
-	bool GetbIsEquiping() { return bIsEquiping; }
-	void SetbIsEquiping(bool boolean);
+	bool GetbIsEquiping() const { return bIsEquiping; }
+	void SetbIsEquiping(const bool _bIsEquiping) { bIsEquiping = _bIsEquiping; }
 
-	FRotator GetLastRotation() { return LastRotation; }
+	FRotator GetLastRotation() const { return LastRotation; }
 
-	void ChangebZoomIn();
+public:
+	void ToggleZoomIn() { bZoomIn = !bZoomIn; }
 
 	void PlayAttackMontage();
 
@@ -42,7 +46,7 @@ private:
 	bool bCanJump;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
-	bool bCrouching;
+	bool bIsCrouching;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character, Meta = (AllowPrivateAccess = true))
 	bool bIsEquiping;

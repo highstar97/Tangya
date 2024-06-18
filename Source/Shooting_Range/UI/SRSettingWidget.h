@@ -4,6 +4,7 @@
 #include "SRSettingWidget.generated.h"
 
 class USRSaveGame;
+class UButton;
 
 UCLASS()
 class SHOOTING_RANGE_API USRSettingWidget : public UUserWidget
@@ -16,6 +17,12 @@ public:
 
 	void UpdateSettingData(USRSaveGame* SaveGame);
 
+	UFUNCTION()
+	void OnExitClicked();
+
+protected:
+	virtual void NativeConstruct() override;
+
 public:
 	UPROPERTY(BlueprintReadWrite, Category = Setting)
 	float Sound;
@@ -25,4 +32,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = Setting)
 	float MouseSensitivity;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Button_Exit;
 };
