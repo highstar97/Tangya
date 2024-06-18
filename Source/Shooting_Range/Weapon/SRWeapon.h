@@ -29,15 +29,15 @@ class SHOOTING_RANGE_API ASRWeapon : public AActor
 public:	
 	ASRWeapon();
 
-	virtual UTexture2D* GetImage() { return Image; }
-	virtual FString GetName() { return Name; }
-	virtual FString GetAbility() { return Ability; }
-	virtual USkeletalMeshComponent* GetMesh() { return Mesh; }
-	virtual UParticleSystem* GetMuzzleParticle() { return MuzzleParticle; }
-	virtual UParticleSystem* GetBulletTrailParticle() { return BulletTrailParticle; }
-	virtual USoundWave* GetAttackSound() { return AttackSound; }
-	virtual EWeaponAbilityScore GetWeaponAbilityScore() { return WeaponAbilityScore; }
-	virtual EWeaponAbilityBullet GetWeaponAbilityBullet() { return WeaponAbilityBullet; }
+	UTexture2D* GetImage() { return Image; }
+	FString GetName() { return Name; }
+	FString GetAbility() { return Ability; }
+	USkeletalMeshComponent* GetMesh() { return Mesh; }
+	UParticleSystem* GetMuzzleParticle() { return MuzzleParticle; }
+	UParticleSystem* GetBulletTrailParticle() { return BulletTrailParticle; }
+	USoundWave* GetAttackSound() { return AttackSound; }
+	EWeaponAbilityScore GetWeaponAbilityScore() { return WeaponAbilityScore; }
+	EWeaponAbilityBullet GetWeaponAbilityBullet() { return WeaponAbilityBullet; }
 
 	virtual ASRBullet* ShootBullet(UWorld* World, FVector MuzzleLocation, FRotator MuzzleRotation, FActorSpawnParameters SpawnParams);
 	virtual ASREmptyBullet* ShootEmptyBullet(UWorld* World, FVector ShellEjectLocation, FRotator ShellEjectRotation, FActorSpawnParameters SpawnParams);
