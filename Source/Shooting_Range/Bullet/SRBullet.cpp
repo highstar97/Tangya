@@ -6,8 +6,8 @@ ASRBullet::ASRBullet()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	Shell = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SHELL"));
-	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("PROJECTILEMOVEMENT"));
+	Shell = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Shell"));
+	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 
 	SetRootComponent(Shell);
 

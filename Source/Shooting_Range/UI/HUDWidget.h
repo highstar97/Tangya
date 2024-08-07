@@ -47,8 +47,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Gauge")
 	float CurrentGauge;
 
-	TWeakObjectPtr<ASRPlayerState> CurrentPlayerState;
-
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Score;
 

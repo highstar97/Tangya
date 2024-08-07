@@ -5,8 +5,8 @@ ASREmptyBullet::ASREmptyBullet()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	EmptyShell = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EMPTYSHELL"));
-	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("PROJECTILEMOVEMENT"));
+	EmptyShell = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EmptyShell"));
+	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 
 	SetRootComponent(EmptyShell);
 

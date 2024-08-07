@@ -20,9 +20,9 @@ public:
 	virtual void FireInDirection(const FVector& ShootDirection);
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 	UStaticMeshComponent* Shell;
 
-	UPROPERTY(VisibleAnywhere, Category = Projectile)
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	UProjectileMovementComponent* ProjectileMovementComponent;
 };

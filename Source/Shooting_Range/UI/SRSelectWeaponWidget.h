@@ -4,6 +4,7 @@
 #include "SRSelectWeaponWidget.generated.h"
 
 class UTileView;
+class ASRWeapon;
 
 UCLASS()
 class SHOOTING_RANGE_API USRSelectWeaponWidget : public UUserWidget
@@ -16,4 +17,7 @@ public:
 private:
 	UPROPERTY(meta = (BindWidget))
 	UTileView* Tile_WeaponInfo;
+
+	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	TArray<TSubclassOf<ASRWeapon>> WeaponArray;
 };

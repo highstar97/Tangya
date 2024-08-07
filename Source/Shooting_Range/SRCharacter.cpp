@@ -395,6 +395,7 @@ void ASRCharacter::Fire()
 			ASRBullet* Bullet = CurrentWeapon->ShootBullet(World, FireLocation, FireRotation, SpawnParams);
 			if(Bullet)
 			{
+				// After Fire, Shooter's Rebound.
 				float Roll = 0.0f;
 				float Pitch = FMath::RandRange(-1.0f, 1.0f);
 				float Yaw = FMath::RandRange(-1.0f, 1.0f);

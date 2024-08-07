@@ -39,42 +39,48 @@ public:
 	EWeaponAbilityScore GetWeaponAbilityScore() { return WeaponAbilityScore; }
 	EWeaponAbilityBullet GetWeaponAbilityBullet() { return WeaponAbilityBullet; }
 
-	virtual ASRBullet* ShootBullet(UWorld* World, FVector MuzzleLocation, FRotator MuzzleRotation, FActorSpawnParameters SpawnParams);
-	virtual ASREmptyBullet* ShootEmptyBullet(UWorld* World, FVector ShellEjectLocation, FRotator ShellEjectRotation, FActorSpawnParameters SpawnParams);
+	ASRBullet* ShootBullet(UWorld* World, FVector MuzzleLocation, FRotator MuzzleRotation, FActorSpawnParameters SpawnParams);
+	ASREmptyBullet* ShootEmptyBullet(UWorld* World, FVector ShellEjectLocation, FRotator ShellEjectRotation, FActorSpawnParameters SpawnParams);
 
 protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 	TSubclassOf<ASRWeapon> WeaponClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Bullet")
+	TSubclassOf<ASRBullet> BulletClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon | Bullet")
+	TSubclassOf<ASREmptyBullet> EmptyBulletClass;
+
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 	UTexture2D* Image;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 	FString Name;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 	FString Ability;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 	USkeletalMeshComponent* Mesh;
 
-	UPROPERTY(VisibleAnywhere, Category = Particle)
+	UPROPERTY(EditDefaultsOnly, Category = Particle)
 	UParticleSystem* MuzzleParticle;
 
-	UPROPERTY(VisibleAnywhere, Category = Particle)
+	UPROPERTY(EditDefaultsOnly, Category = Particle)
 	UParticleSystem* BulletTrailParticle;
 
-	UPROPERTY(VisibleAnywhere, Category = Sound)
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
 	USoundWave* AttackSound;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UPROPERTY()
 	ASRBullet* Bullet;
 
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UPROPERTY()
 	ASREmptyBullet* EmptyBullet;
 
 	EWeaponAbilityScore WeaponAbilityScore = EWeaponAbilityScore::NONE;

@@ -20,9 +20,9 @@ public:
 	virtual void BounceOff(const FVector& ShootDirection);
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Weapon)
 	UStaticMeshComponent* EmptyShell;
 
-	UPROPERTY(VisibleAnywhere, Category = Projectile)
+	UPROPERTY(EditDefaultsOnly, Category = Projectile)
 	UProjectileMovementComponent* ProjectileMovementComponent;
 };
