@@ -1,6 +1,6 @@
 # Tangya
 
-Single FPS game made using Unreal Engine
+A single-player shooter game made using Unreal Engine 4.
 
 [key description]
 
@@ -31,7 +31,7 @@ Single FPS game made using Unreal Engine
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 한국어 설명
 
-언리얼 엔진으로 만든 싱글 FPS 게임입니다.
+언리얼 엔진4로 만든 싱글 슈팅 게임입니다.
 
 [키 설명]
 
