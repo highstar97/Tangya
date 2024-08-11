@@ -1,4 +1,4 @@
-# Shooting-Range
+# Tangya
 
 Single FPS game made using Unreal Engine
 
