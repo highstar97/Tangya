@@ -1,7 +1,29 @@
 # Tangya
+## 🖥️ 프로젝트 소개 [(Notion link)](https://www.notion.so/highstar9z6/Tang-Ya-561b5e24a30d47b29dafe75be08ee67d)
+여러 총기를 사용하여 사격 타이밍을 맞추고 점수를 경쟁하는 싱글 슈팅 게임
 
-A single-player shooter game made using Unreal Engine 4.
+#### ⚙️ 개발 환경
+- 사용 언어 : `C++`, `Blueprint`
+- 사용 엔진 : `Unreal Engine 4.27`
 
+#### 🕰️ 개발 기간
+* 2022.08 ~ 2022.12
+
+##### 🧑‍🤝‍🧑 참여 인원 및 담당 분야
+ - 참여 인원 : 2인 ( 팀장 역 )
+ - 담당 분야 : `캐릭터` | `애니메이션` | `무기 시스템` | `랭킹 시스템` | `UI` | `컨텐츠-무한모드`
+
+## 📌 주요 기능
+#### 캐릭터
+- 이동 및 회전 ( with. Blend Space )
+- 총알 발사
+#### 랭킹 시스템
+- 랭킹 등록 및 저장 ( with. Save Game )
+
+자세한 내용은 🖥️ 프로젝트 소개 옆 Notion link에서 확인 가능합니다.
+
+---
+## 플레이 방법
 [key description]
 
 * W, A, S, D : Use the W, A, S, D keys to move your character.
@@ -30,8 +52,6 @@ A single-player shooter game made using Unreal Engine 4.
 * Good Luck!
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 한국어 설명
-
-언리얼 엔진4로 만든 싱글 슈팅 게임입니다.
 
 [키 설명]
 
